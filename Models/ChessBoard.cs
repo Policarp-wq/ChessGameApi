@@ -19,7 +19,7 @@
         }
         public BoardCell? GetCell(int x, int y)
         {
-            if(y >= MAX_Y || y < 0 || x >= MAX_X || x < 0)
+            if(y > MAX_Y || y < 0 || x > MAX_X || x < 0)
                 return null;
             return Cells[x, y];
         }

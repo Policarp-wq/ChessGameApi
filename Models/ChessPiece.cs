@@ -18,18 +18,19 @@
             Cell = cell;
         }
         public abstract List<ChessLocation> GetPossibleMoves(ChessBoard board);
-        protected bool TryMove(ChessBoard board, int x, int y, bool isAttack, out ChessLocation? location)
+        protected bool TryMove(ChessBoard board, int x, int y, out BoardCell? cell)
         {
-            location = null;
-            var cell = board.GetCell(x, y);
+            cell = board.GetCell(x, y);
             if (cell == null)
                 return false;
-            if (cell.Piece != null && !(isAttack && cell.Piece.Color != Color))
+            if (cell.Piece != null && cell.Piece.Color == Color)
                 return false;
-            if(isAttack && cell.Piece == null)
-                return false;
-            location = cell.Location;
             return true;
+        }
+        protected bool CanAttack(BoardCell? cell)
+        {
+            if (cell == null) return false;
+            return cell.Piece != null && cell.Piece.Color != Color;
         }
     }
 }

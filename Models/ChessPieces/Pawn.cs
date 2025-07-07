@@ -21,20 +21,21 @@ namespace ChessGameApi.Models.ChessPieces
         {
             var (x, y) = (Cell.Location.X, Cell.Location.Y);
             List<ChessLocation> res = [];
-            if (TryMove(board, x + 1, y + 1, true, out ChessLocation? l))
-                res.Add(l!);
-            if (TryMove(board, x - 1, y + 1, true, out l))
-                res.Add(l!);
-            if (TryMove(board, x, y + 1, false, out l))
+            if (TryMove(board, x + 1, y + 1, out BoardCell? cell) && CanAttack(cell))
+                res.Add(cell!.Location);
+            if (TryMove(board, x - 1, y + 1, out cell) && CanAttack(board.GetCell(x - 1, y + 1))) //!
+                res.Add(cell!.Location);
+            if (TryMove(board, x, y + 1, out cell) && cell!.Piece == null)
             {
-                res.Add(l!);
-                if (IsFirst && TryMove(board, x, y + 2, false, out l))
+                res.Add(cell!.Location);
+                if (IsFirst && TryMove(board, x, y + 2, out cell) && cell!.Piece == null)
                 {
-                    res.Add(l!);
+                    res.Add(cell!.Location);
                 }
             }
             return res;
         }
+        
 
     }
 }
