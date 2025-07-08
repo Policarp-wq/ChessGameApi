@@ -16,7 +16,6 @@ namespace ChessGameApi.Models
             if (Piece != null)
                 throw new InvalidBoardOperationException($"Failed to set piece on the cell {Location.X} {Location.Y}: It's occupied");
             Piece = piece;
-            piece.Move(this);
         }
         public void Clear()
         {

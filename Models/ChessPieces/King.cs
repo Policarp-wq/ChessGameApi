@@ -3,13 +3,13 @@ namespace ChessGameApi.Models.ChessPieces
 {
     public class King : ChessPiece
     {
-        public King(ChessColors color, BoardCell cell) : base(color, ChessPieceNames.King, cell)
+        public King(ChessColors color) : base(color, ChessPieceNames.King)
         {
         }
         //King can go on checkmate
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board)
+        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
         {
-            var (x, y) = (Cell.Location.X, Cell.Location.Y);
+            var (x, y) = (position.Location.X, position.Location.Y);
             List<ChessLocation> res = [];
             for(int i = -1; i < 2; ++i)
             {

@@ -3,13 +3,13 @@ namespace ChessGameApi.Models.ChessPieces
 {
     public class Queen : ChessPiece
     {
-        public Queen(ChessColors color, BoardCell cell) : base(color, ChessPieceNames.Queen, cell)
+        public Queen(ChessColors color) : base(color, ChessPieceNames.Queen)
         {
         }
         //Just a comb Bishop + Rook
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board)
+        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
         {
-            var (x, y) = (Cell.Location.X, Cell.Location.Y);
+            var (x, y) = (position.Location.X, position.Location.Y);
             List<ChessLocation> res = [];
             for (int i = 0; i < 2; ++i)
             {

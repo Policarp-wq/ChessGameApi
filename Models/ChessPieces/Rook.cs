@@ -3,13 +3,13 @@ namespace ChessGameApi.Models.ChessPieces
 {
     public class Rook : ChessPiece
     {
-        public Rook(ChessColors color, BoardCell cell) : base(color, ChessPieceNames.Rook, cell)
+        public Rook(ChessColors color) : base(color, ChessPieceNames.Rook)
         {
         }
 
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board)
+        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
         {
-            var (x, y) = (Cell.Location.X, Cell.Location.Y);
+            var (x, y) = (position.Location.X, position.Location.Y);
             List<ChessLocation> res = [];
             for (int i = 0; i < 2; ++i)
             {

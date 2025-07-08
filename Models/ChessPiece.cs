@@ -2,25 +2,22 @@
 {
     public abstract class ChessPiece
     {
-        public BoardCell Cell { get; private set; }
         public readonly ChessColors Color;
         public readonly ChessPieceNames Name;
 
-        public ChessPiece(ChessColors color, ChessPieceNames name, BoardCell cell)
+        public ChessPiece(ChessColors color, ChessPieceNames name)
         {
             Color = color;
             Name = name;
-            Cell = cell;
-            cell.SetPiece(this);
         }
-        public virtual void Move(BoardCell cell)
+        public virtual void OnMoved(BoardCell target)
         {
-            Cell = cell;
+
         }
-        public abstract List<ChessLocation> GetPossibleMoves(ChessBoard board);
+        public abstract List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position);
         protected bool TryMove(ChessBoard board, int x, int y, out BoardCell? cell)
         {
-            cell = board.GetCell(x, y);
+            cell = board.TryGetCell(x, y);
             if (cell == null)
                 return false;
             if (cell.Piece != null && cell.Piece.Color == Color)
