@@ -1,5 +1,7 @@
-﻿using ChessGameApi.Exceptions.Chess;
+﻿using ChessGameApi.Converters;
+using ChessGameApi.Exceptions.Chess;
 using ChessGameApi.Models.ChessPieces;
+using System.Text.Json.Serialization;
 
 namespace ChessGameApi.Models
 {
@@ -7,7 +9,8 @@ namespace ChessGameApi.Models
     {
         public const int DIM_X = 7;
         public const int DIM_Y = 7;
-        private BoardCell[,] Cells;
+        [JsonConverter(typeof(Array2DConverter))]
+        public BoardCell[,] Cells { get; private set; } 
         public ChessBoard()
         {
             //use object pool for locations

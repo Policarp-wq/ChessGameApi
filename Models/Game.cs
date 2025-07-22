@@ -52,7 +52,7 @@ namespace ChessGameApi.Models
                 if(cellTo.Piece.Name == ChessPieceNames.King)
                 {
                     Winner = CurrentPlayer;
-                    return new GameState(_board, CurrentPlayer.Id, true, Player1, Player2, Winner);
+                    return new GameState(_board, CurrentPlayer.Id, true, Player1, Player2);//Winner selection!
                 }
             }
             _board.MovePiece(cellFrom, cellTo); 

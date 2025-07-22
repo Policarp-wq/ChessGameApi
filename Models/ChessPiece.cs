@@ -2,8 +2,8 @@
 {
     public abstract class ChessPiece
     {
-        public readonly ChessColors Color;
-        public readonly ChessPieceNames Name;
+        public ChessColors Color { get; private set; }
+        public ChessPieceNames Name { get; private set; }
 
         public ChessPiece(ChessColors color, ChessPieceNames name)
         {
