@@ -1,16 +1,40 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using ChessGameApi.ApiContracts;
+using ChessGameApi.Models;
+using ChessGameApi.Services;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChessGameApi.Hubs
 {
     public interface IChessHubClient
     {
-        Task UpdateBoard(string board);
+        Task UpdateBoard(GameState state);
+        Task GameCreated(GameState state);
+        Task ReceiveGameInviteCode(Guid gameCode);
     }
     public class ChessHub : Hub<IChessHubClient>
     {
-        public async Task MakeMove(string player, string move)
+        private readonly IGameService _gameService;
+
+        public ChessHub(IGameService gameService)
         {
-            await Clients.All.UpdateBoard(move);
+            _gameService = gameService;
+        }
+        public async Task CreateGame(User user)
+        {
+            var gameId = _gameService.CreateGameRequest(user);
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString());
+            await Clients.Caller.ReceiveGameInviteCode(gameId);
+        }
+        public async Task JoinGame(Guid gameId, User joiner)
+        {
+            var state = _gameService.CreateGame(gameId, joiner);
+            await Clients.Group(gameId.ToString()).GameCreated(state);
+        }
+        public async Task MakeMove(PlayerMoveInfo moveInfo)
+        {
+            var state = _gameService.MakeMove(moveInfo);
+
+            await Clients.Group(moveInfo.GameId.ToString()).UpdateBoard(state);
         }
     }
 }

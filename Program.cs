@@ -1,10 +1,13 @@
 using ChessGameApi.Hubs;
+using ChessGameApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
 builder.Services.AddCors();
+
+builder.Services.AddSingleton<IGameService, GameService>();
 
 var app = builder.Build();
 

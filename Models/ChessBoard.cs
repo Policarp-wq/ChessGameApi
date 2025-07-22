@@ -76,7 +76,7 @@ namespace ChessGameApi.Models
         public void FillBoard(PieceInfo?[,] names)
         {
             Clear();
-            if (!(names.GetLength(0) == Cells.GetLength(0) && names.GetLength(1) != Cells.GetLength(1)))
+            if (!(names.GetLength(0) == Cells.GetLength(0) && names.GetLength(1) == Cells.GetLength(1)))
                 throw new InvalidBoardOperationException($"Attempted to fill board with matrix dimension different: was {names.GetLength(0)}, {names.GetLength(1)}");
             for(int i = 0; i < names.GetLength(0); ++i)
             {
@@ -107,10 +107,12 @@ namespace ChessGameApi.Models
                 return null;
             return Cells[x, y];
         }
+        public BoardCell? TryGetCell(ChessLocation location) => TryGetCell(location.X, location.Y);
         public BoardCell GetCell(int x, int y)
         {
             return Cells[x, y];
         }
+        public BoardCell GetCell(ChessLocation location) => GetCell(location.X, location.Y);
         public List<ChessLocation> GetPossibleMoves(int x, int y)
         {
             var cell = TryGetCell(x, y);
@@ -120,5 +122,6 @@ namespace ChessGameApi.Models
                 return [];
             return cell.Piece.GetPossibleMoves(this, cell);
         }
+        public List<ChessLocation> GetPossibleMoves(ChessLocation location) => GetPossibleMoves(location.X, location.Y);
     }
 }
