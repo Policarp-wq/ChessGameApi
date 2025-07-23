@@ -3,11 +3,13 @@ using ChessGameApi.Exceptions.Chess;
 using ChessGameApi.Handlers;
 using ChessGameApi.Models;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGameApi.Services
 {
     public sealed class GameService : IGameService
     {
+        //Игры не удаляются
         private readonly ConcurrentDictionary<Guid, Game> _games;
         private readonly GameQueue _queue;
         public GameService()
@@ -29,6 +31,27 @@ namespace ChessGameApi.Services
                 throw new GameSerivceException($"Game with id {gameId} is already exist");
             }
             return game.CurrentState;
+        }
+        public GameState JoinGame(Guid gameId, User joiner)
+        {
+            if (!_games.TryGetValue(gameId, out var game))
+                throw new GameSerivceException($"No game with id {gameId}");
+            if (!game.IsPlayer(joiner.Id))
+                throw new GameSerivceException($"This user is not playing in this game");
+            return game.CurrentState;
+        }
+        public bool TryJoinGame(Guid gameId, User joiner, [NotNullWhen(true)] out GameState? state)
+        {
+            state = null;
+            try
+            {
+                state = JoinGame(gameId, joiner);
+                return true;
+            }
+            catch(Exception)
+            {
+                return false;
+            }
         }
         private static (Player, Player) CreatePlayers(User firstPlayer, User secondPlayer)
         {
@@ -60,7 +83,7 @@ namespace ChessGameApi.Services
         public List<ChessLocation> GetAvailableMoves(AvailableMovesRequest requests)
         {
             if (!_games.TryGetValue(requests.GameId, out var game))
-                throw new InvalidOperationException($"No game with id {requests.GameId}");
+                throw new GameSerivceException($"No game with id {requests.GameId}");
             return game.GetPossibleMoves(requests.From);
         }
 

@@ -7,27 +7,27 @@ namespace ChessGameApi.Models
 {
     public sealed class ChessBoard
     {
-        public const int DIM_X = 7;
-        public const int DIM_Y = 7;
+        public const int DIM_X = 8;
+        public const int DIM_Y = 8;
         [JsonConverter(typeof(Array2DConverter))]
         public BoardCell[,] Cells { get; private set; } 
         public ChessBoard()
         {
             //use object pool for locations
-            Cells = new BoardCell[DIM_Y + 1, DIM_X + 1];
-            for(int i = 0; i <= DIM_Y; ++i)
+            Cells = new BoardCell[DIM_Y, DIM_X];
+            for(int i = 0; i < DIM_Y; ++i)
             {
-                for(int j = 0; j <= DIM_X; ++j)
+                for(int j = 0; j < DIM_X; ++j)
                 {
-                    Cells[i, j] = new BoardCell(i, j);
+                    Cells[i, j] = new BoardCell(j, i);
                 }
             }
         }
         public void Clear()
         {
-            for (int i = 0; i <= DIM_Y; ++i)
+            for (int i = 0; i < DIM_Y; ++i)
             {
-                for (int j = 0; j <= DIM_X; ++j)
+                for (int j = 0; j < DIM_X; ++j)
                 {
                     Cells[i, j].Clear();
                 }
@@ -44,7 +44,7 @@ namespace ChessGameApi.Models
         }
         public void FillBoardWithInitialState()
         {
-            PieceInfo?[,] names = new PieceInfo?[DIM_Y + 1, DIM_X + 1];
+            PieceInfo?[,] names = new PieceInfo?[DIM_Y, DIM_X];
  
             names[0, 0] = new("Rook", 'w');
             names[0, 1] = new("Knight", 'w');
@@ -55,7 +55,7 @@ namespace ChessGameApi.Models
             names[0, 6] = new("Knight", 'w');
             names[0, 7] = new("Rook", 'w');
 
-            for (int i = 0; i <= DIM_X; i++)
+            for (int i = 0; i < DIM_X; i++)
             {
                 names[1, i] = new("Pawn", 'w');
             }
@@ -69,7 +69,7 @@ namespace ChessGameApi.Models
             names[7, 6] = new("Knight", 'b');
             names[7, 7] = new("Rook", 'b');
 
-            for (int i = 0; i <= DIM_X; i++)
+            for (int i = 0; i < DIM_X; i++)
             {
                 names[6, i] = new("Pawn", 'b');
             }
@@ -106,14 +106,14 @@ namespace ChessGameApi.Models
         
         public BoardCell? TryGetCell(int x, int y)
         {
-            if(y > DIM_Y || y < 0 || x > DIM_X || x < 0)
+            if(y >= DIM_Y || y < 0 || x >= DIM_X || x < 0)
                 return null;
-            return Cells[x, y];
+            return GetCell(x, y);
         }
         public BoardCell? TryGetCell(ChessLocation location) => TryGetCell(location.X, location.Y);
         public BoardCell GetCell(int x, int y)
         {
-            return Cells[x, y];
+            return Cells[y, x];
         }
         public BoardCell GetCell(ChessLocation location) => GetCell(location.X, location.Y);
         public List<ChessLocation> GetPossibleMoves(int x, int y)

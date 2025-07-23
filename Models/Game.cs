@@ -52,14 +52,15 @@ namespace ChessGameApi.Models
                 if(cellTo.Piece.Name == ChessPieceNames.King)
                 {
                     Winner = CurrentPlayer;
-                    return new GameState(_board, CurrentPlayer.Id, true, Player1, Player2);//Winner selection!
+                    return new GameState(_board, CurrentPlayer.Id, Player1, Player2);//Winner selection!
                 }
             }
             _board.MovePiece(cellFrom, cellTo); 
             Turn++;
-            return new GameState(_board, CurrentPlayer.Id, false, Player1, Player2);
+            return new GameState(_board, CurrentPlayer.Id, Player1, Player2);
         }
-        public GameState CurrentState => new(_board, CurrentPlayer.Id, false, Player1, Player2);
+        public GameState CurrentState => new(_board, CurrentPlayer.Id, Player1, Player2); // creates multiple equal objects
+        public bool IsPlayer(int userId) => Player1.Id == userId || Player2.Id == userId;
         public int GetPlayerNumber() => Turn % 2 == 0 ? 2 : 1;
         public Player CurrentPlayer => GetPlayerNumber() == 1 ? Player1 : Player2;
         public Player NextPlayer => GetPlayerNumber() == 1 ? Player2 : Player1;

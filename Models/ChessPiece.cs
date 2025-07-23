@@ -1,4 +1,6 @@
-﻿namespace ChessGameApi.Models
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace ChessGameApi.Models
 {
     public abstract class ChessPiece
     {
@@ -15,7 +17,7 @@
 
         }
         public abstract List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position);
-        protected bool TryMove(ChessBoard board, int x, int y, out BoardCell? cell)
+        protected bool TryMove(ChessBoard board, int x, int y,[NotNullWhen(true)] out BoardCell? cell)
         {
             cell = board.TryGetCell(x, y);
             if (cell == null)
@@ -28,6 +30,11 @@
         {
             if (cell == null) return false;
             return cell.Piece != null && cell.Piece.Color != Color;
+        }
+        public override bool Equals(object? obj)
+        {
+            if(obj is not ChessPiece piece) return false;
+            return piece.Color == Color && piece.Name == Name;  
         }
     }
 }

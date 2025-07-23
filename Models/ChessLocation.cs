@@ -23,7 +23,7 @@
             }
         } // down -> up
 
-        public string ChessFormat => (char)('a' + X) + Y.ToString();
+        public string ChessFormat => (char)('a' + X) + (Y + 1).ToString();
 
         public ChessLocation(int x, int y)
         {
@@ -31,7 +31,7 @@
             Y = y;
         }
 
-        public static bool IsValueAllowed(int value) => value >= 0 && value <= 7;
+        public static bool IsValueAllowed(int value) => value >= 0 && value < ChessBoard.DIM_Y;
         public override bool Equals(object? obj)
         {
             if (obj is not ChessLocation loc) return false;

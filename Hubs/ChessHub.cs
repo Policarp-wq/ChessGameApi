@@ -8,8 +8,10 @@ namespace ChessGameApi.Hubs
     public interface IChessHubClient
     {
         Task UpdateBoard(GameState state);
-        Task GameCreated(GameState state);
+        Task JoinedGame(GameState state);
+        //Task GameCreated(GameState state);
         Task ReceiveGameInviteCode(Guid gameCode);
+        Task ReceiveMoves(List<ChessLocation> locations);
     }
     public class ChessHub : Hub<IChessHubClient>
     {
@@ -27,14 +29,21 @@ namespace ChessGameApi.Hubs
         }
         public async Task JoinGame(Guid gameId, User joiner)
         {
-            var state = _gameService.CreateGame(gameId, joiner);
-            await Clients.Group(gameId.ToString()).GameCreated(state);
+            if(!_gameService.TryJoinGame(gameId, joiner, out var state))
+            {
+                state = _gameService.CreateGame(gameId, joiner);
+            }
+            await Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString());
+            await Clients.Group(gameId.ToString()).JoinedGame(state);
         }
         public async Task MakeMove(PlayerMoveInfo moveInfo)
         {
             var state = _gameService.MakeMove(moveInfo);
-
             await Clients.Group(moveInfo.GameId.ToString()).UpdateBoard(state);
+        }
+        public async Task GetMoves(AvailableMovesRequest request)
+        {
+            await Clients.Caller.ReceiveMoves(_gameService.GetAvailableMoves(request));
         }
     }
 }

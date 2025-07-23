@@ -6,11 +6,12 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGameApi.Handlers
 {
-    public class GameQueue
+    public sealed class GameQueue
     {
-        private ConcurrentDictionary<Guid, GameRequest> _pendingRequests;
-        private ConcurrentDictionary<int, GameRequest> _waitingUsers;
-        //private static readonly TimeSpan REQUEST_LIFETIME = TimeSpan.FromMinutes(5);
+        private readonly ConcurrentDictionary<Guid, GameRequest> _pendingRequests;
+        private readonly ConcurrentDictionary<int, GameRequest> _waitingUsers;
+        private static readonly TimeSpan REQUEST_LIFETIME = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan COLLECTING_FREQ = TimeSpan.FromMinutes(1);
         public GameQueue()
         {
             _pendingRequests = new ConcurrentDictionary<Guid, GameRequest>();
@@ -51,7 +52,25 @@ namespace ChessGameApi.Handlers
         {
             if (_waitingUsers.TryRemove(userId, out var gameRequest))
                 _pendingRequests.TryRemove(gameRequest.GameId, out var _);
-
+        }
+        public async Task StartExpiredRequestCollector(CancellationToken token)
+        {
+            while (!token.IsCancellationRequested)
+            {
+                await Task.Delay(COLLECTING_FREQ, token);
+                ClearRequests();
+            }
+        }
+        public void ClearRequests()
+        {
+            var now = DateTime.UtcNow;
+            foreach(var (id, request) in _pendingRequests.ToList())
+            {
+                if((now - request.Created) >= REQUEST_LIFETIME)
+                {
+                    _pendingRequests.TryRemove(id, out _);
+                }
+            }
         }
     }
 }
