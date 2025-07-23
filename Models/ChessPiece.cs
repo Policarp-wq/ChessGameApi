@@ -1,4 +1,5 @@
-﻿using System.Diagnostics.CodeAnalysis;
+﻿using ChessGameApi.Models.Gameplay;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGameApi.Models
 {
@@ -16,7 +17,7 @@ namespace ChessGameApi.Models
         {
 
         }
-        public abstract List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position);
+        public abstract List<ChessLocation> GetPossibleMoves(MoveContext context);
         protected bool TryMove(ChessBoard board, int x, int y,[NotNullWhen(true)] out BoardCell? cell)
         {
             cell = board.TryGetCell(x, y);

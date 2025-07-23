@@ -1,4 +1,6 @@
 ﻿
+using ChessGameApi.Models.Gameplay;
+
 namespace ChessGameApi.Models.ChessPieces
 {
     public class Queen : ChessPiece
@@ -7,8 +9,9 @@ namespace ChessGameApi.Models.ChessPieces
         {
         }
         //Just a comb Bishop + Rook
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
+        public override List<ChessLocation> GetPossibleMoves(MoveContext context)
         {
+            var (board, position) = context;
             var (x, y) = (position.Location.X, position.Location.Y);
             List<ChessLocation> res = [];
             for (int i = 0; i < 2; ++i)

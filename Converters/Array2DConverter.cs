@@ -1,4 +1,4 @@
-﻿using ChessGameApi.Models;
+﻿using ChessGameApi.Models.Gameplay;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 

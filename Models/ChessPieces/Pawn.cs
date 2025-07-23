@@ -1,25 +1,21 @@
 ﻿
 
+using ChessGameApi.Models.Gameplay;
+
 namespace ChessGameApi.Models.ChessPieces
 {
     public class Pawn : ChessPiece
     {
-        public bool WasMoved;
-
         public Pawn(ChessColors color) : base(color, ChessPieceNames.Pawn)
         {
-            WasMoved = false;
         }
-        public override void OnMoved(BoardCell target)
+        public override List<ChessLocation> GetPossibleMoves(MoveContext context)
         {
-            base.OnMoved(target);
-            if (!WasMoved)
-                WasMoved = true;
-        }
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
-        {
+            var (board, position) = context;
             var (x, y) = (position.Location.X, position.Location.Y);
             int delta = Color == ChessColors.White ? 1 : -1;
+            //TODO: better solution
+            bool WasMoved = !(Color == ChessColors.White && y == 1 || Color == ChessColors.Black && y == ChessBoard.DIM_Y - 2);
             List<ChessLocation> res = [];
             if (TryMove(board, x + 1, y + delta, out BoardCell? cell) && CanAttack(cell))
                 res.Add(cell!.Location);

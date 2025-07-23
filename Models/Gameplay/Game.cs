@@ -1,7 +1,8 @@
 ﻿using ChessGameApi.Exceptions.Chess;
 using ChessGameApi.Models.ChessPieces;
+using ChessGameApi.Models.Gameplay;
 
-namespace ChessGameApi.Models
+namespace ChessGameApi.Models.Game
 {
     public sealed class Game
     {
@@ -9,14 +10,14 @@ namespace ChessGameApi.Models
         private readonly Player Player1;
         private readonly Player Player2;
         public readonly Guid Id;
-        public Player? Winner {  get; private set; }
-        public int Turn {  get; private set; }
+        public Player? Winner { get; private set; }
+        public int Turn { get; private set; }
         public Game(Player player1, Player player2, Guid id)
         {
             Id = id;
             _board = new ChessBoard();
             _board.FillBoardWithInitialState();
-            if(player1.ChessSide == ChessColors.White)
+            if (player1.ChessSide == ChessColors.White)
             {
                 Player1 = player1;
                 Player2 = player2;
@@ -41,21 +42,21 @@ namespace ChessGameApi.Models
                 throw new InvalidBoardOperationException("Attempet to make a move when other player's turn");
             var cellFrom = _board.TryGetCell(from);
             var cellTo = _board.TryGetCell(to);
-            if(cellFrom == null || cellTo == null) throw new InvalidBoardOperationException("Attempted to access not existing cells");
+            if (cellFrom == null || cellTo == null) throw new InvalidBoardOperationException("Attempted to access not existing cells");
             if (!_board.GetPossibleMoves(cellFrom.Location).Contains(cellTo.Location))
             {
                 throw new InvalidBoardOperationException("Attempted to commit forbidden move");
             }
-            if(cellTo.Piece != null)
+            if (cellTo.Piece != null)
             {
                 CurrentPlayer.Owns.Add(cellTo.Piece);
-                if(cellTo.Piece.Name == ChessPieceNames.King)
+                if (cellTo.Piece.Name == ChessPieceNames.King)
                 {
                     Winner = CurrentPlayer;
                     return new GameState(_board, CurrentPlayer.Id, Player1, Player2);//Winner selection!
                 }
             }
-            _board.MovePiece(cellFrom, cellTo); 
+            _board.MovePiece(cellFrom, cellTo);
             Turn++;
             return new GameState(_board, CurrentPlayer.Id, Player1, Player2);
         }

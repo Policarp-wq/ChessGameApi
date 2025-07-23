@@ -1,6 +1,6 @@
 ﻿using ChessGameApi.Exceptions.Chess;
 
-namespace ChessGameApi.Models
+namespace ChessGameApi.Models.Gameplay
 {
     public sealed class BoardCell
     {

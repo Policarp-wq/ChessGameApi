@@ -1,5 +1,6 @@
 ﻿using ChessGameApi.ApiContracts;
 using ChessGameApi.Models;
+using ChessGameApi.Models.Game;
 using ChessGameApi.Services;
 using Microsoft.AspNetCore.SignalR;
 

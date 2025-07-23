@@ -1,4 +1,6 @@
-﻿namespace ChessGameApi.Models
+﻿using ChessGameApi.Models.Gameplay;
+
+namespace ChessGameApi.Models
 {
     public sealed class ChessLocation
     {

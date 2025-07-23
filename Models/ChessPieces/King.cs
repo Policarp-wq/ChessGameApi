@@ -1,4 +1,6 @@
 ﻿
+using ChessGameApi.Models.Gameplay;
+
 namespace ChessGameApi.Models.ChessPieces
 {
     public class King : ChessPiece
@@ -7,8 +9,9 @@ namespace ChessGameApi.Models.ChessPieces
         {
         }
         //King can go on checkmate
-        public override List<ChessLocation> GetPossibleMoves(ChessBoard board, BoardCell position)
+        public override List<ChessLocation> GetPossibleMoves(MoveContext context)
         {
+            var (board, position) = context;
             var (x, y) = (position.Location.X, position.Location.Y);
             List<ChessLocation> res = [];
             for(int i = -1; i < 2; ++i)

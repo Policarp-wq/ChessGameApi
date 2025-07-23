@@ -1,23 +1,24 @@
 ﻿using ChessGameApi.Converters;
 using ChessGameApi.Exceptions.Chess;
+using ChessGameApi.Handlers;
 using ChessGameApi.Models.ChessPieces;
 using System.Text.Json.Serialization;
 
-namespace ChessGameApi.Models
+namespace ChessGameApi.Models.Gameplay
 {
     public sealed class ChessBoard
     {
         public const int DIM_X = 8;
         public const int DIM_Y = 8;
         [JsonConverter(typeof(Array2DConverter))]
-        public BoardCell[,] Cells { get; private set; } 
+        public BoardCell[,] Cells { get; private set; }
         public ChessBoard()
         {
             //use object pool for locations
             Cells = new BoardCell[DIM_Y, DIM_X];
-            for(int i = 0; i < DIM_Y; ++i)
+            for (int i = 0; i < DIM_Y; ++i)
             {
-                for(int j = 0; j < DIM_X; ++j)
+                for (int j = 0; j < DIM_X; ++j)
                 {
                     Cells[i, j] = new BoardCell(j, i);
                 }
@@ -45,7 +46,7 @@ namespace ChessGameApi.Models
         public void FillBoardWithInitialState()
         {
             PieceInfo?[,] names = new PieceInfo?[DIM_Y, DIM_X];
- 
+
             names[0, 0] = new("Rook", 'w');
             names[0, 1] = new("Knight", 'w');
             names[0, 2] = new("Bishop", 'w');
@@ -81,9 +82,9 @@ namespace ChessGameApi.Models
             Clear();
             if (!(names.GetLength(0) == Cells.GetLength(0) && names.GetLength(1) == Cells.GetLength(1)))
                 throw new InvalidBoardOperationException($"Attempted to fill board with matrix dimension different: was {names.GetLength(0)}, {names.GetLength(1)}");
-            for(int i = 0; i < names.GetLength(0); ++i)
+            for (int i = 0; i < names.GetLength(0); ++i)
             {
-                for(int j = 0; j < names.GetLength(1); ++j)
+                for (int j = 0; j < names.GetLength(1); ++j)
                 {
                     if (names[i, j] != null)
                         Cells[i, j].SetPiece(CreatePiece(names[i, j]!.Name, names[i, j]!.Color));
@@ -92,21 +93,12 @@ namespace ChessGameApi.Models
         }
         public ChessPiece CreatePiece(ChessPieceNames name, ChessColors color)
         =>
-            name switch
-            {
-                ChessPieceNames.Pawn => new Pawn(color),
-                ChessPieceNames.Rook => new Rook(color),
-                ChessPieceNames.Bishop => new Bishop(color),
-                ChessPieceNames.Knight => new Knight(color),
-                ChessPieceNames.Queen => new Queen(color),
-                ChessPieceNames.King => new King(color),
-                _ => throw new ArgumentException($"{Enum.GetName(name)} cannot be created: didn't specify constructor")
-            };
-  
-        
+            ChessPiecesPool.GetChessPiece(name, color);
+
+
         public BoardCell? TryGetCell(int x, int y)
         {
-            if(y >= DIM_Y || y < 0 || x >= DIM_X || x < 0)
+            if (y >= DIM_Y || y < 0 || x >= DIM_X || x < 0)
                 return null;
             return GetCell(x, y);
         }
@@ -123,7 +115,7 @@ namespace ChessGameApi.Models
                 throw new InvalidBoardOperationException($"Attempted to get moves from outside the board: {x} {y}");
             if (cell.Piece == null)
                 return [];
-            return cell.Piece.GetPossibleMoves(this, cell);
+            return cell.Piece.GetPossibleMoves(new(this, cell));
         }
         public List<ChessLocation> GetPossibleMoves(ChessLocation location) => GetPossibleMoves(location.X, location.Y);
     }

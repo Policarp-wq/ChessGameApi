@@ -1,5 +1,6 @@
 ﻿using ChessGameApi.ApiContracts;
 using ChessGameApi.Models;
+using ChessGameApi.Models.Game;
 using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGameApi.Services

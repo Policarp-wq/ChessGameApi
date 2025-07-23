@@ -2,6 +2,7 @@
 using ChessGameApi.Exceptions.Chess;
 using ChessGameApi.Handlers;
 using ChessGameApi.Models;
+using ChessGameApi.Models.Game;
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
 
