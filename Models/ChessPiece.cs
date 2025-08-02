@@ -1,11 +1,14 @@
 ﻿using ChessGameApi.Models.Gameplay;
 using System.Diagnostics.CodeAnalysis;
+using System.Text.Json.Serialization;
 
 namespace ChessGameApi.Models
 {
     public abstract class ChessPiece
     {
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChessColors Color { get; private set; }
+        [JsonConverter(typeof(JsonStringEnumConverter))]
         public ChessPieceNames Name { get; private set; }
 
         public ChessPiece(ChessColors color, ChessPieceNames name)
