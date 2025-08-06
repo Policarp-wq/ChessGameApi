@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.12.35506.116
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGameApi", "ChessGameApi.csproj", "{944C2A78-6A79-493C-BAC8-E19AAF0074D1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGame.Main", "./ChessGame.Main/ChessGameApi.csproj", "{944C2A78-6A79-493C-BAC8-E19AAF0074D1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGame.Testing", "..\ChessGame.Testing\ChessGame.Testing.csproj", "{C0B2D7B5-753E-4B98-9322-16F93906B15E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChessGame.Testing", "./ChessGame.Testing/ChessGame.Testing.csproj", "{C0B2D7B5-753E-4B98-9322-16F93906B15E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
