@@ -1,4 +1,6 @@
-﻿namespace ChessGameApi.Models.ChessPieces
+using ChessGame.Domain.GamePhysics;
+
+namespace ChessGame.Domain.ChessPieces
 {
     public record PieceInfo(ChessPieceNames Name, ChessColors Color)
     {

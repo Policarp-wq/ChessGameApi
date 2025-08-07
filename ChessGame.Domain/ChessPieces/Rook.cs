@@ -1,6 +1,7 @@
-﻿using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Domain.Gameplay;
 
-namespace ChessGameApi.Models.ChessPieces
+namespace ChessGame.Domain.ChessPieces
 {
     public class Rook : ChessPiece
     {

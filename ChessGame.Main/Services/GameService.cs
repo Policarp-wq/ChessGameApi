@@ -1,13 +1,14 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using ChessGameApi.ApiContracts;
-using ChessGameApi.DTOs;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Handlers;
-using ChessGameApi.Models;
-using ChessGameApi.Models.Game;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Domain.Gameplay;
+using ChessGame.Main.ApiContracts;
+using ChessGame.Main.DTOs;
+using ChessGame.Main.Exceptions;
+using ChessGame.Main.Handlers;
+using ChessGame.Main.Models;
 
-namespace ChessGameApi.Services
+namespace ChessGame.Main.Services
 {
     public sealed class GameService : IGameService
     {
@@ -33,7 +34,7 @@ namespace ChessGameApi.Services
             {
                 throw new GameServiceException($"Game with id {gameId} is already exist");
             }
-            return game.CurrentState;
+            return GameStateDTO.ToDTO(game.CurrentState);
         }
 
         public GameStateDTO JoinGame(Guid gameId, User joiner)
@@ -42,7 +43,7 @@ namespace ChessGameApi.Services
                 throw new GameServiceException($"No game with id {gameId}");
             if (!game.IsPlayer(joiner.Id))
                 throw new GameServiceException($"This user is not playing in this game");
-            return game.CurrentState;
+            return GameStateDTO.ToDTO(game.CurrentState);
         }
 
         public bool TryJoinGame(
@@ -102,7 +103,7 @@ namespace ChessGameApi.Services
         {
             if (!_games.TryGetValue(GameId, out var game))
                 throw new InvalidOperationException($"No game with id {GameId}");
-            return game.CurrentState;
+            return GameStateDTO.ToDTO(game.CurrentState);
         }
 
         public GameStateDTO MakeMove(PlayerMoveInfo moveInfo)
@@ -110,7 +111,7 @@ namespace ChessGameApi.Services
             if (!_games.TryGetValue(moveInfo.GameId, out var game))
                 throw new InvalidOperationException($"No game with id {moveInfo.GameId}");
             game.MakeMove(moveInfo.From, moveInfo.To, moveInfo.PlayerId);
-            return game.CurrentState;
+            return GameStateDTO.ToDTO(game.CurrentState);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿using ChessGameApi.Models;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.ApiContracts
+namespace ChessGame.Main.ApiContracts
 {
     public record PlayerMoveInfo(
         Guid GameId,

@@ -1,8 +1,8 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
-using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Converters
+namespace ChessGame.Domain.Converters
 {
     public class Array2DConverter : JsonConverter<BoardCell[,]>
     {

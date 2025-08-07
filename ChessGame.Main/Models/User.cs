@@ -1,4 +1,4 @@
-﻿namespace ChessGameApi.Models
+namespace ChessGame.Main.Models
 {
     public class User
     {

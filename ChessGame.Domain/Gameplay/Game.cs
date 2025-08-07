@@ -1,9 +1,7 @@
-﻿using ChessGameApi.DTOs;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Models.ChessPieces;
-using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.Exceptions;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Models.Game
+namespace ChessGame.Domain.Gameplay
 {
     public sealed class Game
     {
@@ -12,7 +10,7 @@ namespace ChessGameApi.Models.Game
         private readonly Player Player2;
         public readonly Guid Id;
         public int Turn { get; private set; }
-        private GameState _currentState;
+        public GameState CurrentState { get; private set; }
         public readonly Action<Player>? OnEndGame;
 
         public Game(Player player1, Player player2, Guid id)
@@ -31,7 +29,7 @@ namespace ChessGameApi.Models.Game
                 Player1 = player2;
                 Player2 = player1;
             }
-            _currentState = new GameState(_board, Player1, Player2, Player1);
+            CurrentState = new GameState(_board, Player1, Player2, Player1);
             Turn = 1;
         }
 
@@ -40,7 +38,7 @@ namespace ChessGameApi.Models.Game
             var cell = _board.TryGetCell(location);
             if (cell == null || cell.Piece == null || CurrentPlayer.ChessSide != cell.Piece.Color)
                 return [];
-            return _currentState.GetMoves(location);
+            return CurrentState.GetMoves(location);
         }
 
         public void EndGame(Player winner)
@@ -58,7 +56,7 @@ namespace ChessGameApi.Models.Game
             var cellTo = _board.TryGetCell(to);
             if (cellFrom == null || cellTo == null)
                 throw new InvalidBoardOperationException("Attempted to access not existing cells");
-            if (!_currentState.IsMovePossible(from, to))
+            if (!CurrentState.IsMovePossible(from, to))
                 throw new InvalidBoardOperationException("Attempted to commit forbidden move");
 
             var result = _board.MovePiece(cellFrom, cellTo);
@@ -69,11 +67,9 @@ namespace ChessGameApi.Models.Game
             {
                 EndGame(CurrentPlayer);
             }
-            _currentState = nextState;
+            CurrentState = nextState;
             Turn++;
         }
-
-        public GameStateDTO CurrentState => _currentState.ToDTO();
 
         public bool IsPlayer(int userId) => Player1.Id == userId || Player2.Id == userId;
 

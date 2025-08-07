@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ChessGameApi.Models;
-using ChessGameApi.Models.ChessPieces;
-using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.ChessPieces;
+using ChessGame.Domain.GamePhysics;
 
 namespace ChessGame.Testing.PiecesTesting
 {

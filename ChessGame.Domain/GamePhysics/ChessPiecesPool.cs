@@ -1,7 +1,6 @@
-﻿using ChessGameApi.Models;
-using ChessGameApi.Models.ChessPieces;
+using ChessGame.Domain.ChessPieces;
 
-namespace ChessGameApi.Handlers
+namespace ChessGame.Domain.GamePhysics
 {
     public static class ChessPiecesPool
     {

@@ -1,6 +1,6 @@
-﻿using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Models
+namespace ChessGame.Domain.GamePhysics
 {
     public sealed class ChessLocation
     {

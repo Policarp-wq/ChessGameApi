@@ -1,5 +1,5 @@
-using ChessGameApi.Hubs;
-using ChessGameApi.Services;
+using ChessGame.Main.Hubs;
+using ChessGame.Main.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

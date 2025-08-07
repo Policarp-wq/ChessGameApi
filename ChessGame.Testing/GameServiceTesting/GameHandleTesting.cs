@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Models;
-using ChessGameApi.Services;
+using ChessGame.Domain.Exceptions;
+using ChessGame.Main.Exceptions;
+using ChessGame.Main.Models;
+using ChessGame.Main.Services;
 
 namespace ChessGame.Testing.GameServiceTesting
 {

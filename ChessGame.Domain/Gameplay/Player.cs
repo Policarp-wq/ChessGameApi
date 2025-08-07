@@ -1,6 +1,8 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
+using ChessGame.Domain.ChessPieces;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Models
+namespace ChessGame.Domain.Gameplay
 {
     public class Player
     {

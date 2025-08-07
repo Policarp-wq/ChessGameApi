@@ -1,10 +1,10 @@
-﻿using System.Text.Json.Serialization;
-using ChessGameApi.Converters;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Handlers;
-using ChessGameApi.Models.ChessPieces;
+using System.Text.Json.Serialization;
+using ChessGame.Domain.ChessPieces;
+using ChessGame.Domain.Converters;
+using ChessGame.Domain.Exceptions;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Models.Gameplay
+namespace ChessGame.Domain.GamePhysics
 {
     public sealed class ChessBoard : ICloneable
     {

@@ -1,10 +1,8 @@
-﻿using ChessGameApi.DTOs;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Handlers;
-using ChessGameApi.Models;
-using ChessGameApi.Models.Game;
-using ChessGameApi.Models.Gameplay;
-using ChessGameApi.Services;
+using ChessGame.Domain.Exceptions;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Main.DTOs;
+using ChessGame.Main.Models;
+using ChessGame.Main.Services;
 
 namespace ChessGame.Testing.GameServiceTesting
 {

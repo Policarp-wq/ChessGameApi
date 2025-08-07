@@ -1,6 +1,7 @@
-﻿using ChessGameApi.Exceptions.Chess;
+using ChessGame.Domain.ChessPieces;
+using ChessGame.Domain.Exceptions;
 
-namespace ChessGameApi.Models.Gameplay
+namespace ChessGame.Domain.GamePhysics
 {
     public sealed class BoardCell : ICloneable
     {

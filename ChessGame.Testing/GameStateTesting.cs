@@ -1,6 +1,5 @@
-using System;
-using ChessGameApi.Models;
-using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Domain.Gameplay;
 
 namespace ChessGame.Testing;
 

@@ -1,45 +1,32 @@
-using System;
-using ChessGameApi.DTOs;
-using ChessGameApi.Models.ChessPieces;
+using ChessGame.Domain.GamePhysics;
 
-namespace ChessGameApi.Models.Gameplay
+namespace ChessGame.Domain.Gameplay
 {
     public sealed class GameState
     {
-        private readonly ChessBoard _board;
-        private readonly Player _player1,
-            _player2;
-        private readonly Player _currentPlayer;
+        public readonly ChessBoard Board;
+        public readonly Player Player1,
+            Player2;
+        public readonly Player CurrentPlayer;
         public bool IsKingUnderAttack { get; private set; } = false;
         private readonly Dictionary<ChessLocation, List<ChessLocation>> _possibleMoves;
         public bool IsOver => _possibleMoves.Count == 0;
 
         public GameState(ChessBoard board, Player player1, Player player2, Player currentPlayer)
         {
-            _board = board;
-            _player1 = player1;
-            _player2 = player2;
-            _currentPlayer = currentPlayer;
-            IsKingUnderAttack = !IsKingSafe(_board, _currentPlayer);
+            Board = board;
+            Player1 = player1;
+            Player2 = player2;
+            CurrentPlayer = currentPlayer;
+            IsKingUnderAttack = !IsKingSafe(Board, CurrentPlayer);
             _possibleMoves = FetchPlayerLegalMoves();
         }
 
-        private GameStateDTO? _dtoCache;
-
-        public GameStateDTO ToDTO()
-        {
-            if (_dtoCache == null)
-            {
-                _dtoCache = new GameStateDTO(_board, _currentPlayer.Id, _player1, _player2);
-            }
-            return _dtoCache;
-        }
-
         private IEnumerable<BoardCell> GetEnemyCells() =>
-            _board.GetCellsByPieceColor(_currentPlayer.ChessSide.GetEnemy());
+            Board.GetCellsByPieceColor(CurrentPlayer.ChessSide.GetEnemy());
 
         private IEnumerable<BoardCell> GetAllyCells() =>
-            _board.GetCellsByPieceColor(_currentPlayer.ChessSide);
+            Board.GetCellsByPieceColor(CurrentPlayer.ChessSide);
 
         public static IEnumerable<BoardCell> GetEnemyCells(ChessBoard board, Player current) =>
             board.GetCellsByPieceColor(current.ChessSide.GetEnemy());
@@ -81,11 +68,11 @@ namespace ChessGameApi.Models.Gameplay
             var possibleMoves = new Dictionary<ChessLocation, List<ChessLocation>>();
             foreach (var allyCell in GetAllyCells())
             {
-                var context = new MoveContext(_board, allyCell);
+                var context = new MoveContext(Board, allyCell);
                 foreach (var pos in allyCell.Piece!.GetPossibleMoves(context))
                 {
-                    var attackedCell = _board.GetCell(pos);
-                    if (IsMoveAppliable(_board, _currentPlayer, allyCell, attackedCell))
+                    var attackedCell = Board.GetCell(pos);
+                    if (IsMoveAppliable(Board, CurrentPlayer, allyCell, attackedCell))
                     {
                         if (!possibleMoves.TryAdd(allyCell.Location, [pos]))
                         {

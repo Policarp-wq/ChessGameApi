@@ -1,10 +1,10 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
-using ChessGameApi.ApiContracts;
-using ChessGameApi.Exceptions.Chess;
-using ChessGameApi.Models;
+using ChessGame.Domain.Exceptions;
+using ChessGame.Main.ApiContracts;
+using ChessGame.Main.Models;
 
-namespace ChessGameApi.Handlers
+namespace ChessGame.Main.Handlers
 {
     public sealed class GameQueue
     {

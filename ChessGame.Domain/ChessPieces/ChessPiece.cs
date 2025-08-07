@@ -1,8 +1,9 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
-using ChessGameApi.Models.Gameplay;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Domain.Gameplay;
 
-namespace ChessGameApi.Models
+namespace ChessGame.Domain.ChessPieces
 {
     public abstract class ChessPiece
     {

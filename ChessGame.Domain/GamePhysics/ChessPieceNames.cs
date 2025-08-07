@@ -1,4 +1,4 @@
-﻿namespace ChessGameApi.Models
+namespace ChessGame.Domain.GamePhysics
 {
     public enum ChessPieceNames
     {

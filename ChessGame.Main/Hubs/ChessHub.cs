@@ -1,11 +1,11 @@
-﻿using ChessGameApi.ApiContracts;
-using ChessGameApi.DTOs;
-using ChessGameApi.Models;
-using ChessGameApi.Models.Game;
-using ChessGameApi.Services;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Main.ApiContracts;
+using ChessGame.Main.DTOs;
+using ChessGame.Main.Models;
+using ChessGame.Main.Services;
 using Microsoft.AspNetCore.SignalR;
 
-namespace ChessGameApi.Hubs
+namespace ChessGame.Main.Hubs
 {
     public interface IChessHubClient
     {

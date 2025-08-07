@@ -1,4 +1,4 @@
-﻿namespace ChessGameApi.Exceptions
+namespace ChessGame.Main.Exceptions
 {
     public class ServerException : Exception
     {
