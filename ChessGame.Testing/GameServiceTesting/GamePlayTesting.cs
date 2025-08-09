@@ -1,7 +1,7 @@
+using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Domain.GamePhysics;
 using ChessGame.Main.DTOs;
-using ChessGame.Main.Models;
 using ChessGame.Main.Services;
 
 namespace ChessGame.Testing.GameServiceTesting

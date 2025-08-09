@@ -1,10 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
+using ChessGame.Database.Models;
 using ChessGame.Domain.GamePhysics;
-using ChessGame.Main.ApiContracts;
 using ChessGame.Main.DTOs;
-using ChessGame.Main.Models;
 
-namespace ChessGame.Main.Services
+namespace ChessGame.Main.Abstractions
 {
     public interface IGameService
     {

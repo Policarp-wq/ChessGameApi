@@ -1,12 +1,12 @@
 using System.Collections.Concurrent;
 using System.Diagnostics.CodeAnalysis;
+using ChessGame.Database.Models;
 using ChessGame.Domain.GamePhysics;
 using ChessGame.Domain.Gameplay;
-using ChessGame.Main.ApiContracts;
+using ChessGame.Main.Abstractions;
 using ChessGame.Main.DTOs;
 using ChessGame.Main.Exceptions;
 using ChessGame.Main.Handlers;
-using ChessGame.Main.Models;
 
 namespace ChessGame.Main.Services
 {

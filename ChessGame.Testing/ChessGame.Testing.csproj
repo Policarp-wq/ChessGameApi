@@ -12,6 +12,8 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="../ChessGame.Database/ChessGame.Database.csproj" />
+    <ProjectReference Include="../ChessGame.Domain/ChessGame.Domain.csproj" />
     <ProjectReference Include="../ChessGame.Main/ChessGame.Main.csproj" />
   </ItemGroup>
   <ItemGroup>

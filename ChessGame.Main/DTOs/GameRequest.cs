@@ -1,6 +1,6 @@
-using ChessGame.Main.Models;
+using ChessGame.Database.Models;
 
-namespace ChessGame.Main.ApiContracts
+namespace ChessGame.Main.DTOs
 {
     public record GameRequest(User User, Guid GameId, DateTime Created) { }
 }

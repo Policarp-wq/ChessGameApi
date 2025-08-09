@@ -1,6 +1,6 @@
+using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Main.Exceptions;
-using ChessGame.Main.Models;
 using ChessGame.Main.Services;
 
 namespace ChessGame.Testing.GameServiceTesting

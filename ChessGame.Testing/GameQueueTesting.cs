@@ -1,6 +1,6 @@
+using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Main.Handlers;
-using ChessGame.Main.Models;
 
 namespace ChessGame.Testing
 {
