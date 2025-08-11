@@ -4,6 +4,7 @@ using ChessGame.Domain.GamePhysics;
 using ChessGame.Main.Abstractions;
 using ChessGame.Main.DTOs;
 using ChessGame.Main.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace ChessGame.Main.Hubs
@@ -18,6 +19,7 @@ namespace ChessGame.Main.Hubs
         Task ReceiveMoves(List<ChessLocation> locations);
     }
 
+    [Authorize]
     public class ChessHub : Hub<IChessHubClient>
     {
         private readonly IGameService _gameService;

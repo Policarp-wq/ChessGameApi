@@ -48,7 +48,7 @@ public class GameStateTesting
     [Fact]
     public void King_CanGoAnyDirection_WhenNoAttackers()
     {
-        var (white, black) = GetWhiteBlackPlayers();
+        var (_, _) = GetWhiteBlackPlayers();
         var board = new ChessBoard();
         var king = board.CreatePiece(ChessPieceNames.King, ChessColors.White);
         List<ChessLocation> expected =
@@ -71,7 +71,7 @@ public class GameStateTesting
     [Fact]
     public void King_CanNotGo_OnEnemyAttack()
     {
-        var (white, black) = GetWhiteBlackPlayers();
+        var (_, _) = GetWhiteBlackPlayers();
         var board = new ChessBoard();
         var knight = board.CreatePiece(ChessPieceNames.Knight, ChessColors.Black);
         var king = board.CreatePiece(ChessPieceNames.King, ChessColors.White);

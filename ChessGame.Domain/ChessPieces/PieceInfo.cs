@@ -8,6 +8,7 @@ namespace ChessGame.Domain.ChessPieces
             : this(
                 Enum.Parse<ChessPieceNames>(name),
                 color == 'w' ? ChessColors.White : ChessColors.Black
-            ) { }
+            )
+        { }
     }
 }

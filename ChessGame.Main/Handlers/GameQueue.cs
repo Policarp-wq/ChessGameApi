@@ -1,8 +1,8 @@
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Main.DTOs;
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGame.Main.Handlers
 {

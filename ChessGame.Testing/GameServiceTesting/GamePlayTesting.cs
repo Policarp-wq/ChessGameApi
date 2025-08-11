@@ -10,9 +10,9 @@ namespace ChessGame.Testing.GameServiceTesting
     {
         private static Guid CreateGame(GameService service)
         {
-            var user1 = new User() { Name = "", Id = 1 };
+            var user1 = new User() { Login = "", Id = 1 };
             var id = service.CreateGameRequest(user1);
-            service.CreateGame(id, new User() { Id = 2, Name = "" });
+            service.CreateGame(id, new User() { Id = 2, Login = "" });
             return id;
         }
 

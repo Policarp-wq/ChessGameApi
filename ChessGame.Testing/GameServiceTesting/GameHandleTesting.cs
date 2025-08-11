@@ -1,6 +1,6 @@
 using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
-using ChessGame.Main.Exceptions;
+using ChessGame.Main.Exceptions.ResponseExceptions;
 using ChessGame.Main.Services;
 
 namespace ChessGame.Testing.GameServiceTesting
@@ -11,10 +11,10 @@ namespace ChessGame.Testing.GameServiceTesting
         public void GameCreatesIfDataIsNormal()
         {
             var gameService = new GameService();
-            var user = new User() { Id = 1, Name = "test" };
+            var user = new User() { Id = 1, Login = "test" };
 
             var gameId = gameService.CreateGameRequest(user);
-            var state = gameService.CreateGame(gameId, new User() { Id = 2, Name = "test" });
+            var state = gameService.CreateGame(gameId, new User() { Id = 2, Login = "test" });
 
             Assert.NotNull(state);
         }
@@ -23,7 +23,7 @@ namespace ChessGame.Testing.GameServiceTesting
         public void OneUserCantCreateMultipleGames()
         {
             var gameService = new GameService();
-            var user = new User() { Id = 1, Name = "test" };
+            var user = new User() { Id = 1, Login = "test" };
 
             var gameId = gameService.CreateGameRequest(user);
             Assert.Throws<GameQueueException>(() => gameService.CreateGameRequest(user));
@@ -33,7 +33,7 @@ namespace ChessGame.Testing.GameServiceTesting
         public void UserCantJoinRequestedGame()
         {
             var gameService = new GameService();
-            var user = new User() { Id = 1, Name = "test" };
+            var user = new User() { Id = 1, Login = "test" };
 
             var gameId = gameService.CreateGameRequest(user);
             Assert.Throws<GameServiceException>(() => gameService.JoinGame(gameId, user));
@@ -43,10 +43,10 @@ namespace ChessGame.Testing.GameServiceTesting
         public void PlayerCanJoinStartedGame()
         {
             var gameService = new GameService();
-            var user = new User() { Id = 1, Name = "test" };
+            var user = new User() { Id = 1, Login = "test" };
 
             var gameId = gameService.CreateGameRequest(user);
-            gameService.CreateGame(gameId, new User() { Id = 2, Name = "" });
+            gameService.CreateGame(gameId, new User() { Id = 2, Login = "" });
             Assert.NotNull(gameService.JoinGame(gameId, user));
         }
 
@@ -54,12 +54,12 @@ namespace ChessGame.Testing.GameServiceTesting
         public void OtherUserCantJoinStartedGame()
         {
             var gameService = new GameService();
-            var user = new User() { Id = 1, Name = "test" };
+            var user = new User() { Id = 1, Login = "test" };
 
             var gameId = gameService.CreateGameRequest(user);
-            gameService.CreateGame(gameId, new User() { Id = 2, Name = "" });
+            gameService.CreateGame(gameId, new User() { Id = 2, Login = "" });
             Assert.Throws<GameServiceException>(() =>
-                gameService.JoinGame(gameId, new User() { Id = 3, Name = "" })
+                gameService.JoinGame(gameId, new User() { Id = 3, Login = "" })
             );
         }
     }

@@ -6,6 +6,7 @@ using ChessGame.Domain.Gameplay;
 using ChessGame.Main.Abstractions;
 using ChessGame.Main.DTOs;
 using ChessGame.Main.Exceptions;
+using ChessGame.Main.Exceptions.ResponseExceptions;
 using ChessGame.Main.Handlers;
 
 namespace ChessGame.Main.Services
@@ -71,13 +72,13 @@ namespace ChessGame.Main.Services
                 player2;
             if (number == 1)
             {
-                player1 = new Player(firstPlayer.Id, firstPlayer.Name, ChessColors.White, []);
-                player2 = new Player(secondPlayer.Id, secondPlayer.Name, ChessColors.Black, []);
+                player1 = new Player(firstPlayer.Id, firstPlayer.Login, ChessColors.White, []);
+                player2 = new Player(secondPlayer.Id, secondPlayer.Login, ChessColors.Black, []);
             }
             else
             {
-                player1 = new Player(firstPlayer.Id, firstPlayer.Name, ChessColors.Black, []);
-                player2 = new Player(secondPlayer.Id, secondPlayer.Name, ChessColors.White, []);
+                player1 = new Player(firstPlayer.Id, firstPlayer.Login, ChessColors.Black, []);
+                player2 = new Player(secondPlayer.Id, secondPlayer.Login, ChessColors.White, []);
             }
             return (player1, player2);
         }

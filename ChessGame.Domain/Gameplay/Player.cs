@@ -1,6 +1,6 @@
-using System.Text.Json.Serialization;
 using ChessGame.Domain.ChessPieces;
 using ChessGame.Domain.GamePhysics;
+using System.Text.Json.Serialization;
 
 namespace ChessGame.Domain.Gameplay
 {

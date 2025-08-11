@@ -1,6 +1,6 @@
+using ChessGame.Domain.GamePhysics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using ChessGame.Domain.GamePhysics;
 
 namespace ChessGame.Domain.Converters
 {

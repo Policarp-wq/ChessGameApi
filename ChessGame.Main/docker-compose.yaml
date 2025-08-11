@@ -1,0 +1,14 @@
+services:
+  db:
+    image: postgres:14.18
+    container_name: postgres_db
+    shm_size: 128mb
+    ports:
+      - 15432:5432
+    env_file:
+      - ./db.env
+    volumes:
+      - db_data:/var/lib/postgresql
+
+volumes:
+  db_data:

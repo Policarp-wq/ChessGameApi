@@ -11,23 +11,23 @@ namespace ChessGame.Testing
         {
             var queue = new GameQueue();
 
-            var gameId1 = queue.AddUser(new User() { Id = 1, Name = "test1" });
-            var gameId2 = queue.AddUser(new User() { Id = 2, Name = "test2" });
+            var gameId1 = queue.AddUser(new User() { Id = 1, Login = "test1" });
+            var gameId2 = queue.AddUser(new User() { Id = 2, Login = "test2" });
 
             Assert.True(queue.TryGetUserByGameId(gameId1, out var user));
             Assert.NotNull(user);
-            Assert.Equal("test1", user.Name);
+            Assert.Equal("test1", user.Login);
 
             Assert.True(queue.TryGetUserByGameId(gameId2, out user));
             Assert.NotNull(user);
-            Assert.Equal("test2", user.Name);
+            Assert.Equal("test2", user.Login);
         }
 
         [Fact]
         public void OneUserCantMakeMultipleQueues()
         {
             var queue = new GameQueue();
-            var user = new User() { Id = 1, Name = "GameCreatesIfDataIsNormal" };
+            var user = new User() { Id = 1, Login = "GameCreatesIfDataIsNormal" };
 
             queue.AddUser(user);
             Assert.Throws<GameQueueException>(() => queue.AddUser(user));
@@ -45,8 +45,7 @@ namespace ChessGame.Testing
         public void QueueReturnsFalseIfNoGameWithId()
         {
             var queue = new GameQueue();
-
-            Assert.False(queue.TryGetUserByGameId(Guid.CreateVersion7(), out var user));
+            Assert.False(queue.TryGetUserByGameId(Guid.CreateVersion7(), out _));
         }
 
         [Fact]
@@ -54,8 +53,8 @@ namespace ChessGame.Testing
         {
             var queue = new GameQueue();
 
-            queue.AddUser(new User { Id = 1, Name = "GameCreatesIfDataIsNormal" });
-            queue.AddUser(new User { Id = 2, Name = "GameCreatesIfDataIsNormal" });
+            queue.AddUser(new User { Id = 1, Login = "GameCreatesIfDataIsNormal" });
+            queue.AddUser(new User { Id = 2, Login = "GameCreatesIfDataIsNormal" });
 
             queue.RemoveUser(1);
             Assert.False(queue.TryGetGameId(1, out var _));

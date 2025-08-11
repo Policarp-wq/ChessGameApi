@@ -7,5 +7,6 @@ namespace ChessGame.Main.DTOs
         int PlayerId,
         ChessLocation From,
         ChessLocation To
-    ) { }
+    )
+    { }
 }

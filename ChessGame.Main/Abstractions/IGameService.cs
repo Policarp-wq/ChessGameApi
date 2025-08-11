@@ -1,7 +1,7 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using ChessGame.Database.Models;
+﻿using ChessGame.Database.Models;
 using ChessGame.Domain.GamePhysics;
 using ChessGame.Main.DTOs;
+using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGame.Main.Abstractions
 {

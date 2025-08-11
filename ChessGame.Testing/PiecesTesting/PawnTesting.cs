@@ -71,7 +71,6 @@ namespace ChessGame.Testing.PiecesTesting
             board.GetCell(1, 1).SetPiece(new Pawn(ChessColors.White));
             board.GetCell(1, 2).SetPiece(new Pawn(ChessColors.Black));
             var moves = board.GetPossibleMoves(1, 1);
-            List<ChessLocation> expect = [new ChessLocation(1, 2), new ChessLocation(1, 3)];
 
             Assert.Empty(moves);
         }
