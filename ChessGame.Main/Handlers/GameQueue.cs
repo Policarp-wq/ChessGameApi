@@ -1,42 +1,45 @@
+using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Main.DTOs;
-using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
 
 namespace ChessGame.Main.Handlers
 {
     public sealed class GameQueue
     {
         private readonly ConcurrentDictionary<Guid, GameRequest> _pendingRequests;
-        private readonly ConcurrentDictionary<int, GameRequest> _waitingUsers;
+        private readonly ConcurrentDictionary<int, GameRequest> _waitingPlayers;
         private static readonly TimeSpan REQUEST_LIFETIME = TimeSpan.FromMinutes(5);
         private static readonly TimeSpan COLLECTING_FREQ = TimeSpan.FromMinutes(1);
 
         public GameQueue()
         {
             _pendingRequests = new ConcurrentDictionary<Guid, GameRequest>();
-            _waitingUsers = new ConcurrentDictionary<int, GameRequest>();
+            _waitingPlayers = new ConcurrentDictionary<int, GameRequest>();
         }
 
-        public Guid AddUser(User user)
+        public Guid AddPlayer(PlayerRegisterInfo playerInfo)
         {
-            var gameRequest = new GameRequest(user, Guid.CreateVersion7(), DateTime.UtcNow);
-            if (!_waitingUsers.TryAdd(user.Id, gameRequest))
+            var gameRequest = new GameRequest(playerInfo, Guid.CreateVersion7(), DateTime.UtcNow);
+            if (!_waitingPlayers.TryAdd(playerInfo.Id, gameRequest))
                 throw new GameQueueException("User with this id is already waiting for game");
 
             while (!_pendingRequests.TryAdd(gameRequest.GameId, gameRequest))
-                gameRequest = new GameRequest(user, Guid.CreateVersion7(), DateTime.UtcNow);
-            _waitingUsers[user.Id] = gameRequest;
+                gameRequest = new GameRequest(playerInfo, Guid.CreateVersion7(), DateTime.UtcNow);
+            _waitingPlayers[playerInfo.Id] = gameRequest;
             return gameRequest.GameId;
         }
 
-        public bool TryGetUserByGameId(Guid gameId, [NotNullWhen(true)] out User? user)
+        public bool TryGetUserByGameId(
+            Guid gameId,
+            [NotNullWhen(true)] out PlayerRegisterInfo? user
+        )
         {
             user = null;
             if (_pendingRequests.TryGetValue(gameId, out var request))
             {
-                user = request.User;
+                user = request.Player;
                 return true;
             }
             return false;
@@ -45,7 +48,7 @@ namespace ChessGame.Main.Handlers
         public bool TryGetGameId(int userId, [NotNullWhen(true)] out Guid? gameId)
         {
             gameId = null;
-            if (_waitingUsers.TryGetValue(userId, out var request))
+            if (_waitingPlayers.TryGetValue(userId, out var request))
             {
                 gameId = request.GameId;
                 return true;
@@ -53,9 +56,9 @@ namespace ChessGame.Main.Handlers
             return false;
         }
 
-        public void RemoveUser(int userId)
+        public void RemovePlayer(int userId)
         {
-            if (_waitingUsers.TryRemove(userId, out var gameRequest))
+            if (_waitingPlayers.TryRemove(userId, out var gameRequest))
                 _pendingRequests.TryRemove(gameRequest.GameId, out var _);
         }
 

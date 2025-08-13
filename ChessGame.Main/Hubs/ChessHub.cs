@@ -20,32 +20,47 @@ namespace ChessGame.Main.Hubs
     }
 
     [Authorize]
-    public class ChessHub : Hub<IChessHubClient>
+    public class ChessHub(ILogger<ChessHub> _logger, IGameService _gameService)
+        : Hub<IChessHubClient>
     {
-        private readonly IGameService _gameService;
-        private readonly ILogger<ChessHub> _logger;
-
-        public ChessHub(IGameService gameService, ILogger<ChessHub> logger)
+        private PlayerRegisterInfo GetPlayerInfo()
         {
-            _gameService = gameService;
-            _logger = logger;
+            var userLoginClaim = Context.User?.FindFirst(JwtService.UserLogin);
+            var userIdClaim = Context.User?.FindFirst(JwtService.UserIdentifier);
+
+            if (userLoginClaim == null || userIdClaim == null)
+            {
+                _logger.LogError("User claims not found.");
+                throw new HubException("User claims not found.");
+            }
+
+            var userLogin = userLoginClaim.Value;
+            if (!int.TryParse(userIdClaim.Value, out int userId))
+            {
+                _logger.LogError("User id {Id} is not a number ", userIdClaim.Value);
+                throw new HubException("User id is not a number");
+            }
+            return new(userId, userLogin);
         }
 
-        public async Task CreateGame(User user)
+        public async Task CreateGame()
         {
-            var gameId = _gameService.CreateGameRequest(user);
+            var playerInfo = GetPlayerInfo();
+            var gameId = _gameService.CreateGameRequest(playerInfo);
+
             _logger.LogInformation(
                 "Game created with ID: {GameId} by user with id: {User}",
                 gameId,
-                user.Id
+                playerInfo.Id
             );
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString());
-            _logger.LogInformation("Send game invite code to user: {UserId}", user.Id);
+            _logger.LogInformation("Send game invite code to user: {UserId}", playerInfo.Id);
             await Clients.Caller.ReceiveGameInviteCode(gameId);
         }
 
-        public async Task JoinGame(Guid gameId, User joiner)
+        public async Task JoinGame(Guid gameId)
         {
+            var joiner = GetPlayerInfo();
             if (!_gameService.TryJoinGame(gameId, joiner, out var state))
             {
                 state = _gameService.CreateGame(gameId, joiner);

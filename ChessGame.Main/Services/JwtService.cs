@@ -12,8 +12,8 @@ namespace ChessGame.Main.Services;
 
 public class JwtService : IJwtService
 {
-    private const string UserIdentifier = "UserId";
-    private const string UserLogin = "Login";
+    public const string UserIdentifier = "UserId";
+    public const string UserLogin = "Login";
     private readonly JwtConfig _jwtConfig;
 
     public JwtService(IOptions<JwtConfig> options)

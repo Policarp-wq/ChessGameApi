@@ -23,7 +23,7 @@ namespace ChessGame.Main.Services
             _queue = new GameQueue();
         }
 
-        public GameStateDTO CreateGame(Guid gameId, User joiner)
+        public GameStateDTO CreateGame(Guid gameId, PlayerRegisterInfo joiner)
         {
             if (!_queue.TryGetUserByGameId(gameId, out var requester))
                 throw new GameServiceException($"No game request with this id {gameId}");
@@ -38,7 +38,7 @@ namespace ChessGame.Main.Services
             return GameStateDTO.ToDTO(game.CurrentState);
         }
 
-        public GameStateDTO JoinGame(Guid gameId, User joiner)
+        public GameStateDTO JoinGame(Guid gameId, PlayerRegisterInfo joiner)
         {
             if (!_games.TryGetValue(gameId, out var game))
                 throw new GameServiceException($"No game with id {gameId}");
@@ -49,7 +49,7 @@ namespace ChessGame.Main.Services
 
         public bool TryJoinGame(
             Guid gameId,
-            User joiner,
+            PlayerRegisterInfo joiner,
             [NotNullWhen(true)] out GameStateDTO? state
         )
         {
@@ -65,7 +65,10 @@ namespace ChessGame.Main.Services
             }
         }
 
-        private static (Player, Player) CreatePlayers(User firstPlayer, User secondPlayer)
+        private static (Player, Player) CreatePlayers(
+            PlayerRegisterInfo firstPlayer,
+            PlayerRegisterInfo secondPlayer
+        )
         {
             int number = DecideStartingPlayerNumber();
             Player player1,
@@ -88,9 +91,9 @@ namespace ChessGame.Main.Services
             return Random.Shared.Next(1, 3);
         }
 
-        public Guid CreateGameRequest(User requester)
+        public Guid CreateGameRequest(PlayerRegisterInfo requester)
         {
-            return _queue.AddUser(requester);
+            return _queue.AddPlayer(requester);
         }
 
         public List<ChessLocation> GetAvailableMoves(AvailableMovesRequest requests)

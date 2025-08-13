@@ -16,7 +16,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSerilog(dispose: true);
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR();
-builder.Services.AddCors();
+
+builder.Services.AddCors(opt =>
+{
+    opt.AddPolicy(
+        "All",
+        pol =>
+        {
+            pol.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+        }
+    );
+});
 
 builder.Services.AddAuthorization();
 var jwtConfig = new JwtConfig()
@@ -43,7 +53,7 @@ builder
             ValidateIssuerSigningKey = true,
             ValidateAudience = true,
             ValidateIssuer = true,
-            ValidateLifetime = true,
+            ValidateLifetime = false,
         };
     });
 
@@ -63,6 +73,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
+app.UseCors(p =>
+{
+    p.WithOrigins("http://localhost:5173").AllowCredentials().AllowAnyMethod().AllowAnyHeader();
+    ;
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 if (app.Environment.IsDevelopment())
@@ -76,11 +92,6 @@ if (app.Environment.IsDevelopment())
 
 //app.UseHttpsRedirection();
 
-app.UseCors(p =>
-{
-    p.WithOrigins("http://localhost:5173").AllowCredentials().AllowAnyMethod().AllowAnyHeader();
-    ;
-});
 app.MapHub<ChessHub>("/chessHub");
 Log.Information("Chess game server is now running");
 app.UseUserEndpoints();
