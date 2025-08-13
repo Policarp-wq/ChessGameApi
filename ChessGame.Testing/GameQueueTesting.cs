@@ -1,5 +1,6 @@
 using ChessGame.Database.Models;
 using ChessGame.Domain.Exceptions;
+using ChessGame.Main.DTOs;
 using ChessGame.Main.Handlers;
 
 namespace ChessGame.Testing
@@ -11,8 +12,8 @@ namespace ChessGame.Testing
         {
             var queue = new GameQueue();
 
-            var gameId1 = queue.AddPlayer(new User() { Id = 1, Login = "test1" });
-            var gameId2 = queue.AddPlayer(new User() { Id = 2, Login = "test2" });
+            var gameId1 = queue.AddPlayer(new PlayerRegisterInfo(1, "test1"));
+            var gameId2 = queue.AddPlayer(new PlayerRegisterInfo(2, "test2"));
 
             Assert.True(queue.TryGetUserByGameId(gameId1, out var user));
             Assert.NotNull(user);
@@ -27,7 +28,7 @@ namespace ChessGame.Testing
         public void OneUserCantMakeMultipleQueues()
         {
             var queue = new GameQueue();
-            var user = new User() { Id = 1, Login = "GameCreatesIfDataIsNormal" };
+            var user = new PlayerRegisterInfo(1, "GameCreatesIfDataIsNormal");
 
             queue.AddPlayer(user);
             Assert.Throws<GameQueueException>(() => queue.AddPlayer(user));
@@ -53,8 +54,8 @@ namespace ChessGame.Testing
         {
             var queue = new GameQueue();
 
-            queue.AddPlayer(new User { Id = 1, Login = "GameCreatesIfDataIsNormal" });
-            queue.AddPlayer(new User { Id = 2, Login = "GameCreatesIfDataIsNormal" });
+            queue.AddPlayer(new PlayerRegisterInfo(1, "GameCreatesIfDataIsNormal"));
+            queue.AddPlayer(new PlayerRegisterInfo(2, "GameCreatesIfDataIsNormal"));
 
             queue.RemovePlayer(1);
             Assert.False(queue.TryGetGameId(1, out var _));
