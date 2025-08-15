@@ -12,11 +12,11 @@ namespace ChessGame.Testing.GameServiceTesting
         {
             var user1 = new PlayerRegisterInfo(1, "");
             var id = service.CreateGameRequest(user1);
-            service.CreateGame(id, new PlayerRegisterInfo(2, ""));
+            service.JoinByCodeAndCreateGame(id, new PlayerRegisterInfo(2, ""));
             return id;
         }
 
-        private (int, int) GetWhiteBlackPlayers(GameService service, Guid id)
+        private static (int, int) GetWhiteBlackPlayers(GameService service, Guid id)
         {
             var state = service.GetGameState(id);
             if (state.Player1.ChessSide == ChessColors.White)
@@ -162,6 +162,20 @@ namespace ChessGame.Testing.GameServiceTesting
             );
 
             //MakeMove()//pool!
+        }
+
+        [Fact]
+        public void WhiteSide_MakesFirstMove()
+        {
+            var gameService = new GameService();
+            var id = CreateGame(gameService);
+            var (white, black) = GetWhiteBlackPlayers(gameService, id);
+
+            var blackMoves = gameService.GetAvailableMoves(new(id, black, new(1, 6)));
+            var whiteMoves = gameService.GetAvailableMoves(new(id, white, new(1, 1)));
+
+            Assert.Empty(blackMoves);
+            Assert.Equal(2, whiteMoves.Count);
         }
     }
 }

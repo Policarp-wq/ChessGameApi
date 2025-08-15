@@ -12,9 +12,11 @@ namespace ChessGame.Main.Hubs
     public interface IChessHubClient
     {
         Task UpdateBoard(GameStateDTO state);
-        Task JoinedGame(GameStateDTO state);
+        Task GameResumed(GameStateDTO state);
+        Task GamePaused();
+        Task UserLeft();
 
-        //Task GameCreated(GameState state);
+        Task GameCreated(GameStateDTO state);
         Task ReceiveGameInviteCode(Guid gameCode);
         Task ReceiveMoves(List<ChessLocation> locations);
     }
@@ -23,7 +25,40 @@ namespace ChessGame.Main.Hubs
     public class ChessHub(ILogger<ChessHub> _logger, IGameService _gameService)
         : Hub<IChessHubClient>
     {
-        private PlayerRegisterInfo GetPlayerInfo()
+        public override async Task OnConnectedAsync()
+        {
+            var player = GetPlayerInfoFromContext();
+            await base.OnConnectedAsync();
+            _logger.LogInformation("User {UserId} connected to the hub", player.Id);
+            if (_gameService.TryRejoinGame(player.Id, out var gameId))
+            {
+                var group = gameId.Value.ToString();
+                await Groups.AddToGroupAsync(Context.ConnectionId, group);
+                var gameDto = _gameService.GetGameState(gameId.Value);
+                await Clients.Group(group).GameResumed(gameDto);
+                _logger.LogInformation(
+                    "User {UserId} rejoined game {GameId}",
+                    player.Id,
+                    gameId.Value
+                );
+            }
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            var player = GetPlayerInfoFromContext();
+            await base.OnDisconnectedAsync(exception);
+            _logger.LogInformation("User {UserId} disconnected from the hub", player.Id);
+            if (_gameService.TryLeaveGame(player.Id, out var gameId))
+            {
+                var group = gameId.Value.ToString();
+                await Groups.RemoveFromGroupAsync(Context.ConnectionId, group);
+                await Clients.Group(group).GamePaused();
+                _logger.LogInformation("User {UserId} left game {GameId}", player.Id, gameId.Value);
+            }
+        }
+
+        private PlayerRegisterInfo GetPlayerInfoFromContext()
         {
             var userLoginClaim = Context.User?.FindFirst(JwtService.UserLogin);
             var userIdClaim = Context.User?.FindFirst(JwtService.UserIdentifier);
@@ -43,9 +78,9 @@ namespace ChessGame.Main.Hubs
             return new(userId, userLogin);
         }
 
-        public async Task CreateGame()
+        public async Task CreateNewGameRequest()
         {
-            var playerInfo = GetPlayerInfo();
+            var playerInfo = GetPlayerInfoFromContext();
             var gameId = _gameService.CreateGameRequest(playerInfo);
 
             _logger.LogInformation(
@@ -58,23 +93,19 @@ namespace ChessGame.Main.Hubs
             await Clients.Caller.ReceiveGameInviteCode(gameId);
         }
 
-        public async Task JoinGame(Guid gameId)
+        public async Task JoinNewGame(Guid gameId)
         {
-            var joiner = GetPlayerInfo();
-            if (!_gameService.TryJoinGame(gameId, joiner, out var state))
-            {
-                state = _gameService.CreateGame(gameId, joiner);
-                _logger.LogInformation(
-                    "Game with ID: {GameId} created for: {User1} is {Side1}; {User2} is {Side2}",
-                    gameId,
-                    state.Player1.Id,
-                    Enum.GetName(state.Player1.ChessSide),
-                    state.Player2.Id,
-                    Enum.GetName(state.Player2.ChessSide)
-                );
-            }
+            var playerInfo = GetPlayerInfoFromContext();
+            var state = _gameService.JoinByCodeAndCreateGame(gameId, playerInfo);
+            _logger.LogInformation(
+                "Created game for players: {Id1} side {Side1} and {Id2} side {Side2}",
+                state.Player1.Id,
+                Enum.GetName(state.Player1.ChessSide),
+                state.Player2.Id,
+                Enum.GetName(state.Player2.ChessSide)
+            );
             await Groups.AddToGroupAsync(Context.ConnectionId, gameId.ToString());
-            await Clients.Group(gameId.ToString()).JoinedGame(state);
+            await Clients.Group(gameId.ToString()).GameCreated(state);
         }
 
         public async Task MakeMove(PlayerMoveInfo moveInfo)

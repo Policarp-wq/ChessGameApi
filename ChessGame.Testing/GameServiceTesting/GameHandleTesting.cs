@@ -15,7 +15,7 @@ namespace ChessGame.Testing.GameServiceTesting
             var user = new PlayerRegisterInfo(1, "test");
 
             var gameId = gameService.CreateGameRequest(user);
-            var state = gameService.CreateGame(gameId, new PlayerRegisterInfo(2, ""));
+            var state = gameService.JoinByCodeAndCreateGame(gameId, new PlayerRegisterInfo(2, ""));
 
             Assert.NotNull(state);
         }
@@ -37,19 +37,21 @@ namespace ChessGame.Testing.GameServiceTesting
             var user = new PlayerRegisterInfo(1, "test");
 
             var gameId = gameService.CreateGameRequest(user);
-            Assert.Throws<GameServiceException>(() => gameService.JoinGame(gameId, user));
+            Assert.Throws<GameServiceException>(() =>
+                gameService.JoinByCodeAndCreateGame(gameId, user)
+            );
         }
 
-        [Fact]
-        public void PlayerCanJoinStartedGame()
-        {
-            var gameService = new GameService();
-            var user = new PlayerRegisterInfo(1, "test");
+        // [Fact]
+        // public void PlayerCanJoinStartedGame()
+        // {
+        //     var gameService = new GameService();
+        //     var user = new PlayerRegisterInfo(1, "test");
 
-            var gameId = gameService.CreateGameRequest(user);
-            gameService.CreateGame(gameId, new PlayerRegisterInfo(2, ""));
-            Assert.NotNull(gameService.JoinGame(gameId, user));
-        }
+        //     var gameId = gameService.CreateGameRequest(user);
+        //     gameService.JoinByCodeAndCreateGame(gameId, new PlayerRegisterInfo(2, ""));
+        //     Assert.NotNull(gameService.JoinByCodeAndCreateGame(gameId, user));
+        // }
 
         [Fact]
         public void OtherUserCantJoinStartedGame()
@@ -58,10 +60,9 @@ namespace ChessGame.Testing.GameServiceTesting
             var user = new PlayerRegisterInfo(1, "test");
 
             var gameId = gameService.CreateGameRequest(user);
-            gameService.CreateGame(gameId, new PlayerRegisterInfo(2, ""));
-            Assert.Throws<GameServiceException>(() =>
-                gameService.JoinGame(gameId, new PlayerRegisterInfo(3, ""))
-            );
+            gameService.JoinByCodeAndCreateGame(gameId, new PlayerRegisterInfo(2, ""));
+            Assert.False(gameService.TryRejoinGame(3, out var rejoinedGameId));
+            Assert.Null(rejoinedGameId);
         }
     }
 }

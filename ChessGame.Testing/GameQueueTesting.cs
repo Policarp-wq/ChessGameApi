@@ -57,9 +57,9 @@ namespace ChessGame.Testing
             queue.AddPlayer(new PlayerRegisterInfo(1, "GameCreatesIfDataIsNormal"));
             queue.AddPlayer(new PlayerRegisterInfo(2, "GameCreatesIfDataIsNormal"));
 
-            queue.RemovePlayer(1);
+            queue.TryRemovePlayer(1);
             Assert.False(queue.TryGetGameId(1, out var _));
-            queue.RemovePlayer(2);
+            queue.TryRemovePlayer(2);
             Assert.False(queue.TryGetGameId(2, out _));
         }
     }

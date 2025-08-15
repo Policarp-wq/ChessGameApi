@@ -15,18 +15,13 @@ Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Consol
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSerilog(dispose: true);
 builder.Services.AddOpenApi();
-builder.Services.AddSignalR();
-
-builder.Services.AddCors(opt =>
+builder.Services.AddSignalR(opt =>
 {
-    opt.AddPolicy(
-        "All",
-        pol =>
-        {
-            pol.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
-        }
-    );
+    opt.ClientTimeoutInterval = TimeSpan.FromSeconds(10);
 });
+builder.Services.AddCors();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddAuthorization();
 var jwtConfig = new JwtConfig()
@@ -72,7 +67,8 @@ builder.Services.AddSingleton<IJwtService, JwtService>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
-app.UseSerilogRequestLogging();
+
+//app.UseSerilogRequestLogging();
 app.UseCors(p =>
 {
     p.WithOrigins("http://localhost:5173").AllowCredentials().AllowAnyMethod().AllowAnyHeader();
@@ -95,4 +91,5 @@ if (app.Environment.IsDevelopment())
 app.MapHub<ChessHub>("/chessHub");
 Log.Information("Chess game server is now running");
 app.UseUserEndpoints();
+app.UseExceptionHandler();
 app.Run();

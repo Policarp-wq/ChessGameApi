@@ -6,8 +6,8 @@ namespace ChessGame.Domain.Gameplay
     public sealed class Game
     {
         private readonly ChessBoard _board;
-        private readonly Player Player1;
-        private readonly Player Player2;
+        public readonly Player Player1;
+        public readonly Player Player2;
         public readonly Guid Id;
         public int Turn { get; private set; }
         public GameState CurrentState { get; private set; }

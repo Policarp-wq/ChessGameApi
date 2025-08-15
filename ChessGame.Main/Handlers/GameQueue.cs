@@ -56,11 +56,21 @@ namespace ChessGame.Main.Handlers
             return false;
         }
 
-        public void RemovePlayer(int userId)
+        public void TryRemovePlayer(int userId)
         {
             if (_waitingPlayers.TryRemove(userId, out var gameRequest))
                 _pendingRequests.TryRemove(gameRequest.GameId, out var _);
         }
+
+        // public bool TryRemove(Guid gameId)
+        // {
+        //     if (_pendingRequests.TryRemove(gameId, out var info))
+        //     {
+        //         _waitingPlayers.TryRemove(info.Player.Id, out _);
+        //         return true;
+        //     }
+        //     return false;
+        // }
 
         public async Task StartExpiredRequestCollector(CancellationToken token)
         {

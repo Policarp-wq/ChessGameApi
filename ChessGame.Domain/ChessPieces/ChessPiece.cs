@@ -1,7 +1,7 @@
-using ChessGame.Domain.GamePhysics;
-using ChessGame.Domain.Gameplay;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.Json.Serialization;
+using ChessGame.Domain.GamePhysics;
+using ChessGame.Domain.Gameplay;
 
 namespace ChessGame.Domain.ChessPieces
 {

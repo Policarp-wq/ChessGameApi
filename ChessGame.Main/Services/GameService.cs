@@ -8,114 +8,153 @@ using ChessGame.Main.DTOs;
 using ChessGame.Main.Exceptions;
 using ChessGame.Main.Exceptions.ResponseExceptions;
 using ChessGame.Main.Handlers;
+using ChessGame.Main.Models;
 
 namespace ChessGame.Main.Services
 {
     public sealed class GameService : IGameService
     {
         //Игры не удаляются
-        private readonly ConcurrentDictionary<Guid, Game> _games;
-        private readonly GameQueue _queue;
+        private readonly ConcurrentDictionary<Guid, GameSession> _sessions = new();
+        private readonly ConcurrentDictionary<int, Guid> _userToGameId = new();
+        private readonly GameQueue _queue = new();
 
-        public GameService()
+        public GameService() { }
+
+        public void AddUserToGame(int userId, GameSession session)
         {
-            _games = new ConcurrentDictionary<Guid, Game>();
-            _queue = new GameQueue();
+            _queue.TryRemovePlayer(userId);
+            session.ConnectPlayer(userId);
+            _userToGameId[userId] = session.GameId;
         }
 
-        public GameStateDTO CreateGame(Guid gameId, PlayerRegisterInfo joiner)
+        public void AddUserToGame(int userId, Guid gameId)
         {
+            if (!_sessions.TryGetValue(gameId, out var session))
+                throw new GameServiceException($"No game with id {gameId}");
+            AddUserToGame(userId, session);
+        }
+
+        public void RemoveUserFromGame(int userId, GameSession session)
+        {
+            session.DisconnectPlayer(userId);
+            _userToGameId.TryRemove(userId, out _);
+        }
+
+        public void RemoveUserFromGame(int userId)
+        {
+            if (TryGetSession(userId, out var session))
+                RemoveUserFromGame(userId, session);
+        }
+
+        public GameStateDTO JoinByCodeAndCreateGame(Guid gameId, PlayerRegisterInfo joiner)
+        {
+            if (_sessions.TryGetValue(gameId, out _))
+                throw new GameServiceException($"Game with id {gameId} is already exist");
             if (!_queue.TryGetUserByGameId(gameId, out var requester))
                 throw new GameServiceException($"No game request with this id {gameId}");
             if (joiner.Id == requester.Id)
                 throw new GameServiceException($"Same user cant create the game");
-            var (player1, player2) = CreatePlayers(requester, joiner);
-            var game = new Game(player1, player2, gameId);
-            if (!_games.TryAdd(gameId, game))
-            {
-                throw new GameServiceException($"Game with id {gameId} is already exist");
-            }
-            return GameStateDTO.ToDTO(game.CurrentState);
+
+            var (player1, player2) = SideDecider.CreatePlayers(requester, joiner);
+            var session = new GameSession(new Game(player1, player2, gameId));
+            _sessions[gameId] = session;
+            AddUserToGame(player1.Id, session);
+            AddUserToGame(player2.Id, session);
+            return GameStateDTO.ToDTO(session.Game.CurrentState, gameId);
         }
 
-        public GameStateDTO JoinGame(Guid gameId, PlayerRegisterInfo joiner)
-        {
-            if (!_games.TryGetValue(gameId, out var game))
-                throw new GameServiceException($"No game with id {gameId}");
-            if (!game.IsPlayer(joiner.Id))
-                throw new GameServiceException($"This user is not playing in this game");
-            return GameStateDTO.ToDTO(game.CurrentState);
-        }
+        public Guid CreateGameRequest(PlayerRegisterInfo requester) => _queue.AddPlayer(requester);
 
-        public bool TryJoinGame(
-            Guid gameId,
-            PlayerRegisterInfo joiner,
-            [NotNullWhen(true)] out GameStateDTO? state
-        )
+        public List<ChessLocation> GetAvailableMoves(AvailableMovesRequest request)
         {
-            state = null;
-            try
-            {
-                state = JoinGame(gameId, joiner);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private static (Player, Player) CreatePlayers(
-            PlayerRegisterInfo firstPlayer,
-            PlayerRegisterInfo secondPlayer
-        )
-        {
-            int number = DecideStartingPlayerNumber();
-            Player player1,
-                player2;
-            if (number == 1)
-            {
-                player1 = new Player(firstPlayer.Id, firstPlayer.Login, ChessColors.White, []);
-                player2 = new Player(secondPlayer.Id, secondPlayer.Login, ChessColors.Black, []);
-            }
-            else
-            {
-                player1 = new Player(firstPlayer.Id, firstPlayer.Login, ChessColors.Black, []);
-                player2 = new Player(secondPlayer.Id, secondPlayer.Login, ChessColors.White, []);
-            }
-            return (player1, player2);
-        }
-
-        private static int DecideStartingPlayerNumber()
-        {
-            return Random.Shared.Next(1, 3);
-        }
-
-        public Guid CreateGameRequest(PlayerRegisterInfo requester)
-        {
-            return _queue.AddPlayer(requester);
-        }
-
-        public List<ChessLocation> GetAvailableMoves(AvailableMovesRequest requests)
-        {
-            if (!_games.TryGetValue(requests.GameId, out var game))
-                throw new GameServiceException($"No game with id {requests.GameId}");
-            return game.GetPossibleMoves(requests.From);
+            if (!_sessions.TryGetValue(request.GameId, out var session))
+                throw new GameServiceException($"No game with id {request.GameId}");
+            if (!session.IsUserPlayer(request.PlayerId))
+                throw new GameServiceException(
+                    $"User {request.PlayerId} is not playing in this game"
+                );
+            if (session.Game.CurrentPlayer.Id != request.PlayerId)
+                return [];
+            return session.Game.GetPossibleMoves(request.From);
         }
 
         public GameStateDTO GetGameState(Guid GameId)
         {
-            if (!_games.TryGetValue(GameId, out var game))
+            if (!_sessions.TryGetValue(GameId, out var session))
                 throw new InvalidOperationException($"No game with id {GameId}");
-            return GameStateDTO.ToDTO(game.CurrentState);
+            return GameStateDTO.ToDTO(session.Game.CurrentState, GameId);
         }
 
         public GameStateDTO MakeMove(PlayerMoveInfo moveInfo)
         {
-            if (!_games.TryGetValue(moveInfo.GameId, out var game))
+            if (!_sessions.TryGetValue(moveInfo.GameId, out var session))
                 throw new InvalidOperationException($"No game with id {moveInfo.GameId}");
-            game.MakeMove(moveInfo.From, moveInfo.To, moveInfo.PlayerId);
-            return GameStateDTO.ToDTO(game.CurrentState);
+            if (!session.IsUserPlayer(moveInfo.PlayerId))
+                throw new GameServiceException(
+                    $"User {moveInfo.PlayerId} is not playing in this game"
+                );
+            session.Game.MakeMove(moveInfo.From, moveInfo.To, moveInfo.PlayerId);
+            return GameStateDTO.ToDTO(session.Game.CurrentState, moveInfo.GameId);
+        }
+
+        public GameSession GetSession(Guid gameId)
+        {
+            if (!_sessions.TryGetValue(gameId, out var session))
+                throw new GameServiceException($"No session with id {gameId}");
+            return session;
+        }
+
+        private bool TryGetSession(int userId, [NotNullWhen(true)] out GameSession? session)
+        {
+            session = null;
+            return _userToGameId.TryGetValue(userId, out var gameId)
+                && _sessions.TryGetValue(gameId, out session)
+                && session.IsUserPlayer(userId);
+        }
+
+        public bool TryRejoinGame(int userId, [NotNullWhen(true)] out Guid? gameId)
+        {
+            gameId = null;
+            if (TryGetSession(userId, out var session))
+            {
+                session.ConnectPlayer(userId);
+                gameId = session.GameId;
+                return true;
+            }
+            return false;
+        }
+
+        public bool TryLeaveGame(int userId, [NotNullWhen(true)] out Guid? gameId)
+        {
+            gameId = null;
+            if (TryGetSession(userId, out var session))
+            {
+                session.DisconnectPlayer(userId);
+                if (session.IsAllPLayersDisconnected)
+                {
+                    OnAllPlayersDisconnected(session);
+                    return false;
+                }
+                gameId = session.GameId;
+                return true;
+            }
+            return false;
+        }
+
+        private void RemoveSession(Guid gameId)
+        {
+            if (_sessions.TryGetValue(gameId, out var session))
+            {
+                RemoveUserFromGame(session.Game.Player1.Id);
+                RemoveUserFromGame(session.Game.Player2.Id);
+                _sessions.TryRemove(gameId, out _);
+            }
+        }
+
+        private void OnAllPlayersDisconnected(GameSession session)
+        {
+            RemoveSession(session.GameId);
         }
     }
 }
