@@ -11,7 +11,6 @@ namespace ChessGame.Domain.Gameplay
         public readonly Guid Id;
         public int Turn { get; private set; }
         public GameState CurrentState { get; private set; }
-        public readonly Action<Player>? OnEndGame;
 
         public Game(Player player1, Player player2, Guid id)
         {
@@ -41,13 +40,10 @@ namespace ChessGame.Domain.Gameplay
             return CurrentState.GetMoves(location);
         }
 
-        public void EndGame(Player winner)
-        {
-            OnEndGame?.Invoke(winner);
-        }
-
         public void MakeMove(ChessLocation from, ChessLocation to, int PlayerId)
         {
+            if (CurrentState.IsOver)
+                throw new InvalidBoardOperationException("Game is already over");
             if (CurrentPlayer.Id != PlayerId)
                 throw new InvalidBoardOperationException(
                     "Attempted to make a move when other player's turn"
@@ -65,7 +61,7 @@ namespace ChessGame.Domain.Gameplay
             var nextState = new GameState(_board, Player1, Player2, NextPlayer);
             if (nextState.IsOver)
             {
-                EndGame(CurrentPlayer);
+                nextState.WinnerId = CurrentPlayer.Id;
             }
             CurrentState = nextState;
             Turn++;

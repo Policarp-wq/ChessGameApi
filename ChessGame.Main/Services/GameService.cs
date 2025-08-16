@@ -47,7 +47,7 @@ namespace ChessGame.Main.Services
                 RemoveUserFromGame(userId, session);
         }
 
-        public GameStateDTO JoinByCodeAndCreateGame(Guid gameId, PlayerRegisterInfo joiner)
+        public GameState JoinByCodeAndCreateGame(Guid gameId, PlayerRegisterInfo joiner)
         {
             if (_sessions.TryGetValue(gameId, out _))
                 throw new GameServiceException($"Game with id {gameId} is already exist");
@@ -61,7 +61,7 @@ namespace ChessGame.Main.Services
             _sessions[gameId] = session;
             AddUserToGame(player1.Id, session);
             AddUserToGame(player2.Id, session);
-            return GameStateDTO.ToDTO(session.Game.CurrentState, gameId);
+            return session.Game.CurrentState;
         }
 
         public Guid CreateGameRequest(PlayerRegisterInfo requester) => _queue.AddPlayer(requester);
@@ -79,14 +79,14 @@ namespace ChessGame.Main.Services
             return session.Game.GetPossibleMoves(request.From);
         }
 
-        public GameStateDTO GetGameState(Guid GameId)
+        public GameState GetGameState(Guid GameId)
         {
             if (!_sessions.TryGetValue(GameId, out var session))
                 throw new InvalidOperationException($"No game with id {GameId}");
-            return GameStateDTO.ToDTO(session.Game.CurrentState, GameId);
+            return session.Game.CurrentState;
         }
 
-        public GameStateDTO MakeMove(PlayerMoveInfo moveInfo)
+        public GameState MakeMove(PlayerMoveInfo moveInfo)
         {
             if (!_sessions.TryGetValue(moveInfo.GameId, out var session))
                 throw new InvalidOperationException($"No game with id {moveInfo.GameId}");
@@ -95,7 +95,7 @@ namespace ChessGame.Main.Services
                     $"User {moveInfo.PlayerId} is not playing in this game"
                 );
             session.Game.MakeMove(moveInfo.From, moveInfo.To, moveInfo.PlayerId);
-            return GameStateDTO.ToDTO(session.Game.CurrentState, moveInfo.GameId);
+            return session.Game.CurrentState;
         }
 
         public GameSession GetSession(Guid gameId)
@@ -131,18 +131,22 @@ namespace ChessGame.Main.Services
             if (TryGetSession(userId, out var session))
             {
                 session.DisconnectPlayer(userId);
-                if (session.IsAllPLayersDisconnected)
-                {
-                    OnAllPlayersDisconnected(session);
-                    return false;
-                }
                 gameId = session.GameId;
                 return true;
             }
             return false;
         }
 
-        private void RemoveSession(Guid gameId)
+        public bool AreAllPlayersLeft(Guid gameId)
+        {
+            if (_sessions.TryGetValue(gameId, out var session))
+            {
+                return session.IsAllPlayersDisconnected;
+            }
+            return false;
+        }
+
+        public void RemoveSession(Guid gameId)
         {
             if (_sessions.TryGetValue(gameId, out var session))
             {
@@ -150,11 +154,6 @@ namespace ChessGame.Main.Services
                 RemoveUserFromGame(session.Game.Player2.Id);
                 _sessions.TryRemove(gameId, out _);
             }
-        }
-
-        private void OnAllPlayersDisconnected(GameSession session)
-        {
-            RemoveSession(session.GameId);
         }
     }
 }

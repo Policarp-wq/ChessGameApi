@@ -12,9 +12,11 @@ public class GameSession
         Game = game;
     }
 
+    public bool IsPaused { get; set; } = false;
+
     public bool IsPlayer1Connected { get; private set; } = false;
     public bool IsPlayer2Connected { get; private set; } = false;
-    public bool IsAllPLayersDisconnected => !(IsPlayer1Connected || IsPlayer2Connected);
+    public bool IsAllPlayersDisconnected => !(IsPlayer1Connected || IsPlayer2Connected);
     public Guid GameId => Game.Id;
 
     public bool IsUserPlayer(int userId) => Game.Player1.Id == userId || Game.Player2.Id == userId;

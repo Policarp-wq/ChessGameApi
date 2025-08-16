@@ -127,8 +127,16 @@ namespace ChessGame.Testing.GameServiceTesting
             int toy
         )
         {
-            return service.MakeMove(
-                new(gameId, playerId, new ChessLocation(fromx, fromy), new ChessLocation(tox, toy))
+            return GameStateDTO.ToDTO(
+                service.MakeMove(
+                    new(
+                        gameId,
+                        playerId,
+                        new ChessLocation(fromx, fromy),
+                        new ChessLocation(tox, toy)
+                    )
+                ),
+                gameId
             );
         }
 

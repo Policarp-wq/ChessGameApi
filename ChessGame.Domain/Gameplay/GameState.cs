@@ -11,6 +11,7 @@ namespace ChessGame.Domain.Gameplay
         public bool IsKingUnderAttack { get; private set; } = false;
         private readonly Dictionary<ChessLocation, List<ChessLocation>> _possibleMoves;
         public bool IsOver => _possibleMoves.Count == 0;
+        public int? WinnerId;
 
         public GameState(ChessBoard board, Player player1, Player player2, Player currentPlayer)
         {

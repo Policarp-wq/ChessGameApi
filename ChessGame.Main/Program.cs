@@ -9,15 +9,23 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
+using Serilog.Events;
 
-Log.Logger = new LoggerConfiguration().MinimumLevel.Information().WriteTo.Console().CreateLogger();
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
+    .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+
 builder.Services.AddSerilog(dispose: true);
 builder.Services.AddOpenApi();
 builder.Services.AddSignalR(opt =>
 {
-    opt.ClientTimeoutInterval = TimeSpan.FromSeconds(10);
+    opt.ClientTimeoutInterval = TimeSpan.FromSeconds(120);
+    opt.KeepAliveInterval = TimeSpan.FromSeconds(60);
 });
 builder.Services.AddCors();
 builder.Services.AddProblemDetails();
@@ -49,6 +57,21 @@ builder
             ValidateAudience = true,
             ValidateIssuer = true,
             ValidateLifetime = false,
+        };
+        opt.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var token = context.Request.Query["access_token"];
+                if (
+                    context.Request.Path.StartsWithSegments("/chessHub")
+                    && !string.IsNullOrEmpty(token)
+                )
+                {
+                    context.Token = token;
+                }
+                return Task.CompletedTask;
+            },
         };
     });
 
