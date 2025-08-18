@@ -8,10 +8,12 @@ namespace ChessGame.Main.Models;
 public class GameSession
 {
     private readonly Game _game;
+    private DateTime _started;
 
     public GameSession(Game game)
     {
         _game = game;
+        _started = DateTime.UtcNow;
     }
 
     public bool IsPaused => !(IsPlayer1Connected && IsPlayer2Connected);
@@ -22,6 +24,7 @@ public class GameSession
     public Guid GameId => _game.Id;
     public int Player1Id => _game.Player1.Id;
     public int Player2Id => _game.Player2.Id;
+    public TimeSpan CurrentPassedTime => DateTime.UtcNow - _started;
 
     public bool IsUserPlayer(int userId) =>
         _game.Player1.Id == userId || _game.Player2.Id == userId;

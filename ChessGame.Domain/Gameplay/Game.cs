@@ -59,10 +59,6 @@ namespace ChessGame.Domain.Gameplay
             if (result != null)
                 CurrentPlayer.Owns.Add(result);
             var nextState = new GameState(_board, Player1, Player2, NextPlayer);
-            if (nextState.IsOver)
-            {
-                nextState.WinnerId = CurrentPlayer.Id;
-            }
             CurrentState = nextState;
             Turn++;
         }

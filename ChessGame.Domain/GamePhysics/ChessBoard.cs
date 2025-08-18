@@ -1,8 +1,8 @@
+using System.Text.Json.Serialization;
 using ChessGame.Domain.ChessPieces;
 using ChessGame.Domain.Converters;
 using ChessGame.Domain.Exceptions;
 using ChessGame.Domain.GamePhysics;
-using System.Text.Json.Serialization;
 
 namespace ChessGame.Domain.GamePhysics
 {

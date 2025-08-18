@@ -12,6 +12,7 @@ namespace ChessGame.Main.Handlers
         private readonly ConcurrentDictionary<int, GameRequest> _waitingPlayers;
         private static readonly TimeSpan REQUEST_LIFETIME = TimeSpan.FromMinutes(5);
         private static readonly TimeSpan COLLECTING_FREQ = TimeSpan.FromMinutes(1);
+        public int QueueSize => _waitingPlayers.Count;
 
         public GameQueue()
         {

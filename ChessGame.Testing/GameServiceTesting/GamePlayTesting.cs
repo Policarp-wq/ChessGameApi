@@ -25,7 +25,7 @@ namespace ChessGame.Testing.GameServiceTesting
         }
 
         [Fact]
-        public void PlayersSidesAreDifferent()
+        public void PlayersSides_AreDifferent()
         {
             var gameService = new GameService();
             var id = CreateGame(gameService);
@@ -36,7 +36,7 @@ namespace ChessGame.Testing.GameServiceTesting
         }
 
         [Fact]
-        public void WhiteSideIsPLacedInTheStartOfBoard()
+        public void WhiteSideIsPlaced_InTheStartOfBoard()
         {
             var gameService = new GameService();
             var id = CreateGame(gameService);
@@ -64,7 +64,7 @@ namespace ChessGame.Testing.GameServiceTesting
         }
 
         [Fact]
-        public void InitialBoardMiddleIsEmpty()
+        public void InitialBoardMiddle_IsEmpty()
         {
             var gameService = new GameService();
             var id = CreateGame(gameService);
@@ -84,7 +84,7 @@ namespace ChessGame.Testing.GameServiceTesting
             board.GetCell(x, y).Piece!.Name;
 
         [Fact]
-        public void InitialChessPiecesAreCorrect()
+        public void InitialChessPieces_AreCorrect()
         {
             var gameService = new GameService();
             var id = CreateGame(gameService);
@@ -153,7 +153,6 @@ namespace ChessGame.Testing.GameServiceTesting
             var after = MakeMove(gameService, id, black, 2, 6, 2, 4);
             Assert.Equal(whitePawn, after.Board.GetCell(0, 3).Piece);
             Assert.Equal(blackPawn, after.Board.GetCell(2, 4).Piece);
-            //MakeMove()//pool!
         }
 
         [Fact]
@@ -168,8 +167,6 @@ namespace ChessGame.Testing.GameServiceTesting
             Assert.Throws<InvalidBoardOperationException>(() =>
                 MakeMove(gameService, id, white, 0, 1, 0, 4)
             );
-
-            //MakeMove()//pool!
         }
 
         [Fact]

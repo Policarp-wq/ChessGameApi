@@ -21,13 +21,13 @@ namespace ChessGame.Testing.GameServiceTesting
         }
 
         [Fact]
-        public void OneUserCantCreateMultipleGames()
+        public void IfUserAttempts_ToCreateAnotherGame_ReturnsSameCode()
         {
             var gameService = new GameService();
             var user = new PlayerRegisterInfo(1, "test");
 
             var gameId = gameService.CreateGameRequest(user);
-            Assert.Throws<GameQueueException>(() => gameService.CreateGameRequest(user));
+            Assert.Equal(gameId, gameService.CreateGameRequest(user));
         }
 
         [Fact]

@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using ChessGame.Domain.GamePhysics;
 
 namespace ChessGame.Domain.Gameplay
@@ -10,8 +11,24 @@ namespace ChessGame.Domain.Gameplay
         public readonly Player CurrentPlayer;
         public bool IsKingUnderAttack { get; private set; } = false;
         private readonly Dictionary<ChessLocation, List<ChessLocation>> _possibleMoves;
+
+        [MemberNotNullWhen(true, nameof(Result))]
         public bool IsOver => _possibleMoves.Count == 0;
-        public int? WinnerId;
+        public Player NextPlayer => CurrentPlayer == Player1 ? Player2 : Player1;
+        public EndgameResult? Result
+        {
+            get
+            {
+                if (!IsOver)
+                    return null;
+                var state = IsKingUnderAttack ? EndgameState.Checkmate : EndgameState.Stalemate;
+                EndgameResult result = new(
+                    state,
+                    state == EndgameState.Checkmate ? NextPlayer.Id : null
+                );
+                return result;
+            }
+        }
 
         public GameState(ChessBoard board, Player player1, Player player2, Player currentPlayer)
         {

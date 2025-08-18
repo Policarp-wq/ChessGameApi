@@ -122,17 +122,20 @@ namespace ChessGame.Main.Hubs
             _logger.LogInformation("Game session {GameId} removed", gameId);
         }
 
-        private async Task EndGameForPlayers(Guid gameId, int winnerId)
+        private async Task EndGameForPlayers(Guid gameId, EndgameResult result)
         {
-            var endgameStats = new EndgameStats(winnerId);
-            _logger.LogInformation("Game {GameId} ended with winner {WinnerId}", gameId, winnerId);
+            var endgameStats = new EndgameStats(result.WinnerId, result.State);
+            _logger.LogInformation(
+                "Game {GameId} ended with state {State}",
+                gameId,
+                Enum.GetName(result.State)
+            );
             await Clients.Group(gameId.ToString()).GameOver(endgameStats);
             FinishGameSession(gameId);
         }
 
         public async Task MakeMove(PlayerMoveInfo moveInfo)
         {
-            // todo: cannot make moves if game paused!
             var state = _gameService.MakeMove(moveInfo);
             _logger.LogInformation(
                 "Player {PlayerId} made a move in game {GameId}",
@@ -143,8 +146,8 @@ namespace ChessGame.Main.Hubs
                 .Group(moveInfo.GameId.ToString())
                 .UpdateBoard(GameStateDTO.ToDTO(state, moveInfo.GameId));
             _logger.LogInformation("Board updated for game: {GameId}", moveInfo.GameId);
-            if (state.IsOver && state.WinnerId.HasValue)
-                await EndGameForPlayers(moveInfo.GameId, state.WinnerId.Value);
+            if (state.IsOver)
+                await EndGameForPlayers(moveInfo.GameId, state.Result);
         }
 
         public async Task GetMoves(AvailableMovesRequest request)

@@ -25,13 +25,18 @@ namespace ChessGame.Testing
         }
 
         [Fact]
-        public void OneUserCantMakeMultipleQueues()
+        public void OneUser_CantEnterQueue_MultipleTimes()
         {
             var queue = new GameQueue();
-            var user = new PlayerRegisterInfo(1, "GameCreatesIfDataIsNormal");
+            var user = new PlayerRegisterInfo(1, "");
 
             queue.AddPlayer(user);
-            Assert.Throws<GameQueueException>(() => queue.AddPlayer(user));
+            int afterFirstEnter = queue.QueueSize;
+
+            queue.AddPlayer(user);
+            int afterSecondEnter = queue.QueueSize;
+
+            Assert.Equal(afterFirstEnter, afterSecondEnter);
         }
 
         [Fact]
@@ -54,8 +59,8 @@ namespace ChessGame.Testing
         {
             var queue = new GameQueue();
 
-            queue.AddPlayer(new PlayerRegisterInfo(1, "GameCreatesIfDataIsNormal"));
-            queue.AddPlayer(new PlayerRegisterInfo(2, "GameCreatesIfDataIsNormal"));
+            queue.AddPlayer(new PlayerRegisterInfo(1, ""));
+            queue.AddPlayer(new PlayerRegisterInfo(2, ""));
 
             queue.TryRemovePlayer(1);
             Assert.False(queue.TryGetGameId(1, out var _));
