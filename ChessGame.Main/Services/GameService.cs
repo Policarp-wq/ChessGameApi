@@ -61,7 +61,7 @@ namespace ChessGame.Main.Services
             _sessions[gameId] = session;
             AddUserToGame(player1.Id, session);
             AddUserToGame(player2.Id, session);
-            return session.Game.CurrentState;
+            return session.CurrentState;
         }
 
         public Guid CreateGameRequest(PlayerRegisterInfo requester) => _queue.AddPlayer(requester);
@@ -74,28 +74,23 @@ namespace ChessGame.Main.Services
                 throw new GameServiceException(
                     $"User {request.PlayerId} is not playing in this game"
                 );
-            if (session.Game.CurrentPlayer.Id != request.PlayerId)
-                return [];
-            return session.Game.GetPossibleMoves(request.From);
+            return session.GetPossibleMoves(request.PlayerId, request.From);
         }
 
         public GameState GetGameState(Guid GameId)
         {
             if (!_sessions.TryGetValue(GameId, out var session))
                 throw new InvalidOperationException($"No game with id {GameId}");
-            return session.Game.CurrentState;
+            return session.CurrentState;
         }
 
         public GameState MakeMove(PlayerMoveInfo moveInfo)
         {
             if (!_sessions.TryGetValue(moveInfo.GameId, out var session))
                 throw new InvalidOperationException($"No game with id {moveInfo.GameId}");
-            if (!session.IsUserPlayer(moveInfo.PlayerId))
-                throw new GameServiceException(
-                    $"User {moveInfo.PlayerId} is not playing in this game"
-                );
-            session.Game.MakeMove(moveInfo.From, moveInfo.To, moveInfo.PlayerId);
-            return session.Game.CurrentState;
+
+            session.MakeMove(moveInfo.PlayerId, moveInfo.From, moveInfo.To);
+            return session.CurrentState;
         }
 
         public GameSession GetSession(Guid gameId)
@@ -150,8 +145,8 @@ namespace ChessGame.Main.Services
         {
             if (_sessions.TryGetValue(gameId, out var session))
             {
-                RemoveUserFromGame(session.Game.Player1.Id);
-                RemoveUserFromGame(session.Game.Player2.Id);
+                RemoveUserFromGame(session.Player1Id);
+                RemoveUserFromGame(session.Player2Id);
                 _sessions.TryRemove(gameId, out _);
             }
         }

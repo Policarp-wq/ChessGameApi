@@ -11,14 +11,14 @@ using Scalar.AspNetCore;
 using Serilog;
 using Serilog.Events;
 
+var builder = WebApplication.CreateBuilder(args);
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
     .MinimumLevel.Override("Microsoft.EntityFrameworkCore", LogEventLevel.Warning)
     .MinimumLevel.Information()
     .WriteTo.Console()
     .CreateLogger();
-
-var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddSerilog(dispose: true);
 builder.Services.AddOpenApi();
@@ -75,7 +75,7 @@ builder
         };
     });
 
-string? connectionString = Environment.GetEnvironmentVariable(EnvProvider.DB_LINK);
+string? connectionString = EnvProvider.GetEnvVal(EnvProvider.DB_LINK);
 if (string.IsNullOrEmpty(connectionString))
 {
     Log.Fatal("Connection link to db {Link} is not provided", EnvProvider.DB_LINK);
@@ -91,10 +91,15 @@ builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
-//app.UseSerilogRequestLogging();
+// app.UseSerilogRequestLogging();
 app.UseCors(p =>
 {
-    p.WithOrigins("http://localhost:5173").AllowCredentials().AllowAnyMethod().AllowAnyHeader();
+    p.SetIsOriginAllowed(origin =>
+            origin.StartsWith(EnvProvider.GetEnvVal(EnvProvider.ALLOWED_ORIGIN))
+        )
+        .AllowCredentials()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
     ;
 });
 

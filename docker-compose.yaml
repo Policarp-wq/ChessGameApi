@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:14.18
+    container_name: postgres_db
+    shm_size: 128mb
+    ports:
+      - 15432:5432
+    env_file:
+      - ./db.env
+    volumes:
+      - db_data:/var/lib/postgresql
+  # back:
+  #   image: policarp228/chess-back
+  #   ports:
+  #     - 5127:5127
+  #   environment:
+  #     ASPNETCORE_URLS: "http://0.0.0.0:5127"
+  #     ASP_JWT_SECRET: "psDuDj/JCA0VjBQ2lEjWD2wGoomay4HSX+E8GgpWlR0="
+  #     ASP_DB_LINK: "Server=db; Port=5432; Database=chessDb;User Id=policarp;Password=??lolSOME_PASS123??;"
+  #     ASP_ALLOWED_ORIGIN: "http://localhost"
+  # proxy:
+  #   image: nginx:1.29
+  #   ports:
+  #     - 8080:80
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+  #     - ../chess-front/dist/:/data/www/chess-front/
+volumes:
+  db_data:

@@ -8,6 +8,7 @@ public static class EnvProvider
 {
     public static readonly string DB_LINK = "ASP_DB_LINK";
     public static readonly string JWT_SECRET = "ASP_JWT_SECRET";
+    public static readonly string ALLOWED_ORIGIN = "ASP_ALLOWED_ORIGIN";
 
     public static string GetEnvVal(string env)
     {

@@ -23,7 +23,7 @@ namespace ChessGame.Main.Handlers
         {
             var gameRequest = new GameRequest(playerInfo, Guid.CreateVersion7(), DateTime.UtcNow);
             if (!_waitingPlayers.TryAdd(playerInfo.Id, gameRequest))
-                throw new GameQueueException("User with this id is already waiting for game");
+                return _waitingPlayers[playerInfo.Id].GameId;
 
             while (!_pendingRequests.TryAdd(gameRequest.GameId, gameRequest))
                 gameRequest = new GameRequest(playerInfo, Guid.CreateVersion7(), DateTime.UtcNow);
